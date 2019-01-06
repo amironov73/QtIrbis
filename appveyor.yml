@@ -1,0 +1,12 @@
+platform: x64
+image: Visual Studio 2017
+
+init:
+  - git config --global core.autocrlf true
+
+build_script:
+  - compile.bat
+
+artifacts:
+  - path: Source\release
+    name: Binaries
