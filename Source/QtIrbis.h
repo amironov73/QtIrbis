@@ -21,6 +21,8 @@ public:
     SubField(char code);
     SubField(char code, QString value);
 
+    bool isEmpty() const;
+
     SubField* clone() const;
 
     QString toString() const;
@@ -38,6 +40,8 @@ public:
     RecordField() : tag(0), value(), subfields() {}
     RecordField(int tag);
     RecordField(int tag, QString value);
+
+    bool isEmpty() const;
 
     RecordField* clone() const;
 

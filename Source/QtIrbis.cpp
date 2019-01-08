@@ -11,12 +11,16 @@ SubField::SubField(char code, QString value) {
     this->value = value;
 }
 
+bool SubField::isEmpty() const {
+    return code == '\0' || value.isEmpty();
+}
+
 SubField* SubField::clone() const {
     return new SubField(code, value);
 }
 
 QString SubField::toString() const {
-    return QString("^%d%s").arg(code).arg(value);
+    return QString("^%1%2").arg(code).arg(value);
 }
 
 //=========================================================
@@ -30,6 +34,10 @@ RecordField::RecordField(int tag, QString value) : subfields() {
     this->value = value;
 }
 
+bool RecordField::isEmpty() const {
+    return tag == 0 || (value.isEmpty() && subfields.isEmpty());
+}
+
 RecordField* RecordField::clone() const {
     RecordField *result = new RecordField(tag, value);
     foreach (const SubField *item, subfields) {
@@ -40,7 +48,7 @@ RecordField* RecordField::clone() const {
 }
 
 QString RecordField::toString() const {
-    QString result = QString("%d%s").arg(tag).arg(value);
+    QString result = QString("%1%2").arg(tag).arg(value);
     foreach (const SubField *item, subfields) {
         result.append(item->toString());
     }
@@ -92,11 +100,11 @@ QString FileSpecification::toString() const {
     switch (path) {
     case 0:
     case 1:
-        result = QString("%d..").arg(path) + result;
+        result = QString("%1..").arg(path) + result;
         break;
 
     default:
-        result = QString("%d.%s.").arg(path).arg(database) + result;
+        result = QString("%1.%2.").arg(path).arg(database) + result;
         break;
     }
 
@@ -157,7 +165,7 @@ ClientQuery::ClientQuery(IrbisConnection *connection, QString commandCode)
 }
 
 ClientQuery& ClientQuery::add(int value) {
-    return addAnsi(QString("%d").arg(value));
+    return addAnsi(QString("%1").arg(value));
 }
 
 ClientQuery& ClientQuery::addAnsi(QString text) {

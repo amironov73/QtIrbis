@@ -10,3 +10,6 @@ build_script:
 artifacts:
   - path: Source\release
     name: Binaries
+  - path: Tests\release
+    name: Tests
+

@@ -8,3 +8,10 @@ qmake QtIrbis.pro
 nmake
 windeployqt -no-translations -no-compiler-runtime release\QtIrbis.dll
 cd ..
+cd Tests
+qmake TestIrbis.pro
+nmake
+windeployqt -no-translations -no-compiler-runtime release\TestIrbis.exe
+copy ..\Source\release .\release
+release\TestIrbis.exe
+cd ..
