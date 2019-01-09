@@ -35,3 +35,12 @@ void IrbisConnection::disconnect() {
     // TODO implement
 }
 
+ServerResponse* IrbisConnection::execute(ClientQuery query) {
+    QTcpSocket *socket = new QTcpSocket;
+    socket->connectToHost(host, port);
+    socket->waitForConnected();
+    socket->write(query.encode());
+    ServerResponse* result = new ServerResponse(socket);
+
+    return result;
+}

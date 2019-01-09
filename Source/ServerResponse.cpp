@@ -2,10 +2,11 @@
 
 //=========================================================
 
-ServerResponse::ServerResponse() {
+ServerResponse::ServerResponse(QTcpSocket *socket) {
+    this->socket = socket;
     // TODO implement
 }
 
 void ServerResponse::close() {
-    // TODO implement
+    socket->close();
 }

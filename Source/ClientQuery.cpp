@@ -5,8 +5,9 @@
 ClientQuery::ClientQuery(IrbisConnection *connection, QString commandCode)
     : buffer() {
     this->connection = connection;
+    buffer.open(QIODevice::WriteOnly);
     addAnsi(commandCode);
-    addAnsi(QString("%c").arg(connection->workstation));
+    addAnsi(QString("%1").arg(connection->workstation));
     addAnsi(commandCode);
     add(connection->clientId);
     connection->queryId++;
@@ -23,7 +24,7 @@ ClientQuery& ClientQuery::add(int value) {
 }
 
 ClientQuery& ClientQuery::addAnsi(QString text) {
-    // TODO implement
+    buffer.write(IrbisEncoding::ansi()->fromUnicode(text));
     return addLineFeed();
 }
 
@@ -35,13 +36,12 @@ ClientQuery& ClientQuery::addLineFeed() {
 }
 
 ClientQuery& ClientQuery::addUtf(QString text) {
-    // TODO implement
+    buffer.write(IrbisEncoding::utf()->fromUnicode(text));
     return addLineFeed();
 }
 
-char* ClientQuery::encode() {
-    // TODO implement
-    return nullptr;
+QByteArray& ClientQuery::encode() {
+    return buffer.buffer();
 }
 
 

@@ -7,7 +7,7 @@ QTextCodec* IrbisEncoding::_utf = nullptr;
 
 QTextCodec* IrbisEncoding::ansi() {
     if (!_ansi) {
-        _ansi = QTextCodec::codecForName("Windows-1251");
+        _ansi = QTextCodec::codecForName("windows-1251");
     }
 
     return _ansi;

@@ -2,6 +2,7 @@
 #define QTIRBIS_H
 
 #include <QtCore>
+#include <QtNetwork>
 
 #if defined(QTIRBIS_LIBRARY)
 #define QTIRBIS_EXPORT Q_DECL_EXPORT
@@ -119,6 +120,24 @@ public:
 
 //=========================================================
 
+class QTIRBIS_EXPORT IrbisDate
+{
+public:
+    QString text;
+    QDateTime date;
+
+    IrbisDate(QString text);
+    IrbisDate(QDateTime date);
+
+    static QDateTime convert(QString text);
+    static QString convert(QDateTime date);
+    static QString convert(QDate date);
+    static QString today();
+    static IrbisDate* safeParse(QString text);
+};
+
+//=========================================================
+
 enum IrbisPath
 {
     System = 0,
@@ -202,6 +221,11 @@ public:
 
 //=========================================================
 
+class ClientQuery;
+class ServerResponse;
+
+//=========================================================
+
 class QTIRBIS_EXPORT IrbisConnection
 {
 public:
@@ -222,11 +246,13 @@ public:
     void deleteDatabase(QString databaseName);
     void deleteRecord(int mfn);
     void disconnect();
+
+    ServerResponse* execute(ClientQuery query);
 };
 
 //=========================================================
 
-class ClientQuery
+class QTIRBIS_EXPORT ClientQuery
 {
 private:
     IrbisConnection *connection;
@@ -239,20 +265,23 @@ public:
     ClientQuery& addAnsi(QString text);
     ClientQuery& addLineFeed();
     ClientQuery& addUtf(QString text);
-    char* encode();
+    QByteArray& encode();
 };
 
 //=========================================================
 
-class ServerResponse
+class QTIRBIS_EXPORT ServerResponse
 {
+private:
+    QTcpSocket *socket;
+
 public:
     QString command;
     int clientId;
     int queryId;
     int returnCode;
 
-    ServerResponse();
+    ServerResponse(QTcpSocket *socket);
 
     void close();
 };
