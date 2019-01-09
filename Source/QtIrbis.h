@@ -14,12 +14,12 @@
 class QTIRBIS_EXPORT SubField
 {
 public:
-    char code;
+    QChar code;
     QString value;
 
     SubField() : code('\0'), value() {}
-    SubField(char code);
-    SubField(char code, QString value);
+    SubField(QChar code);
+    SubField(QChar code, QString value);
 
     bool isEmpty() const;
 
@@ -33,17 +33,24 @@ public:
 class QTIRBIS_EXPORT RecordField
 {
 public:
-    int tag;
+    qint32 tag;
     QString value;
-    QVector<SubField*> subfields;
+    QList<SubField*> subfields;
 
     RecordField() : tag(0), value(), subfields() {}
-    RecordField(int tag);
-    RecordField(int tag, QString value);
+    RecordField(qint32 tag);
+    RecordField(qint32 tag, QString value);
 
     bool isEmpty() const;
 
+    RecordField& add(QChar code, QString value);
+    RecordField& clear();
     RecordField* clone() const;
+    SubField* getFirstSubField(QChar code) const;
+    QString getFirstSubFieldValue(QChar code) const;
+    QList<SubField*> getSubField(QChar code) const;
+
+    static RecordField* parse(QString line);
 
     QString toString() const;
 };
@@ -54,6 +61,7 @@ enum RecordStatus
 {
     LogicallyDeleted = 1,
     PhysicallyDeleted = 2,
+    Deleted = LogicallyDeleted | PhysicallyDeleted,
     Absent = 4,
     NonActualized = 8,
     Last = 32,
@@ -65,14 +73,48 @@ enum RecordStatus
 class QTIRBIS_EXPORT MarcRecord
 {
 public:
-    int mfn;
-    QVector<RecordField*> fields;
+    QString database;
+    qint32 mfn;
+    qint32 status;
+    qint32 version;
+    QList<RecordField*> fields;
 
-    MarcRecord() : mfn(0), fields() {}
+    MarcRecord() : database(), mfn(0), status(0), version(0), fields() {}
 
+    MarcRecord& add(qint32 tag);
+    MarcRecord& add(quint32 tag, QString value);
+    MarcRecord& clear();
     MarcRecord* clone() const;
+    QString fm(qint32 tag) const;
+    QString fm(qint32 tag, QChar code) const;
+    QStringList fma(qint32 tag) const;
+    QStringList fma(qint32 tag, QChar code) const;
+    RecordField *getFirstField(qint32 tag) const;
+    bool isDeleted() const { return (status & RecordStatus::Deleted) != 0; }
 
     QString toString() const;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IrbisEncoding
+{
+private:
+    static QTextCodec *_ansi;
+    static QTextCodec *_utf;
+
+public:
+    static QTextCodec* ansi();
+    static QTextCodec* utf();
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IrbisFormat
+{
+public:
+    static QString removeComments(QString text);
+    static QString prepareFormat(QString text);
 };
 
 //=========================================================
@@ -214,6 +256,13 @@ public:
 
     void close();
 };
+
+//=========================================================
+
+// Utilities
+
+bool sameChar(QChar first, QChar second);
+bool sameString(QString first, QString second);
 
 //=========================================================
 
