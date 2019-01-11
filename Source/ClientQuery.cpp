@@ -7,7 +7,8 @@ ClientQuery::ClientQuery(IrbisConnection *connection, QString commandCode)
     this->connection = connection;
     buffer.open(QIODevice::WriteOnly);
     addAnsi(commandCode);
-    addAnsi(QString("%1").arg(connection->workstation));
+    QString workstation = QString("%1").arg(connection->workstation);
+    addAnsi(workstation);
     addAnsi(commandCode);
     add(connection->clientId);
     connection->queryId++;
@@ -20,12 +21,33 @@ ClientQuery::ClientQuery(IrbisConnection *connection, QString commandCode)
 }
 
 ClientQuery& ClientQuery::add(int value) {
-    return addAnsi(QString("%1").arg(value));
+    QString text = fastToString(value);
+    return addAnsi(text);
 }
 
-ClientQuery& ClientQuery::addAnsi(QString text) {
+ClientQuery& ClientQuery::add(FileSpecification &specification) {
+    QString text = specification.toString();
+    return addAnsi(text);
+}
+
+ClientQuery& ClientQuery::add(MarcRecord &record) {
+    QString text = record.toString();
+    return addUtf(text);
+}
+
+ClientQuery& ClientQuery::add(RawRecord &record) {
+    QString text = record.toString();
+    return addUtf(text);
+}
+
+ClientQuery& ClientQuery::addAnsi(QString &text) {
     buffer.write(IrbisEncoding::ansi()->fromUnicode(text));
     return addLineFeed();
+}
+
+ClientQuery& ClientQuery::addAnsiNoLf(QString &text) {
+    buffer.write(IrbisEncoding::ansi()->fromUnicode(text));
+    return *this;
 }
 
 ClientQuery& ClientQuery::addLineFeed() {
@@ -35,13 +57,19 @@ ClientQuery& ClientQuery::addLineFeed() {
     return *this;
 }
 
-ClientQuery& ClientQuery::addUtf(QString text) {
+ClientQuery& ClientQuery::addUtf(QString &text) {
     buffer.write(IrbisEncoding::utf()->fromUnicode(text));
     return addLineFeed();
 }
 
-QByteArray& ClientQuery::encode() {
-    return buffer.buffer();
+QByteArray ClientQuery::encode() {
+    qint64 length = buffer.size();
+    QString prefixString = QString("%1\n").arg(length);
+    QByteArray prefixArray = IrbisEncoding::ansi()->fromUnicode(prefixString);
+    QByteArray result = buffer.buffer();
+    result.prepend(prefixArray);
+
+    return result;
 }
 
 

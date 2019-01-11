@@ -1,4 +1,4 @@
-QT += widgets testlib
+QT += network widgets testlib
 
 INCLUDEPATH += ../Source
 

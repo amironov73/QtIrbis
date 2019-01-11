@@ -1,6 +1,6 @@
 # QtIrbis
 
-ManagedClient ported to Qt 5. Currently 64-bit Windows, MSVS 2017 Community Engine and Qt 5.11.2 are supported.
+ManagedClient ported to Qt 5. Currently 64-bit Windows, MSVS 2017 Community Edition and Qt 5.11.2 are supported.
 
 ### Links
 

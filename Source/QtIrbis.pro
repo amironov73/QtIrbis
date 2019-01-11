@@ -18,6 +18,22 @@ SOURCES += QtIrbis.cpp \
     IrbisProcessInfo.cpp \
     DatabaseInfo.cpp \
     IrbisEncoding.cpp \
-    IrbisFormat.cpp
+    IrbisFormat.cpp \
+    CommandCode.cpp \
+    UserInfo.cpp \
+    ServerStat.cpp \
+    TableDefinition.cpp \
+    MenuFile.cpp \
+    FoundLine.cpp \
+    PostingParameters.cpp \
+    SearchParameters.cpp \
+    SearchScenario.cpp \
+    TermInfo.cpp \
+    TermParameters.cpp \
+    TermPosting.cpp \
+    MenuEntry.cpp \
+    RawRecord.cpp \
+    IniFile.cpp \
+    IrbisVersion.cpp
 
 HEADERS += QtIrbis.h

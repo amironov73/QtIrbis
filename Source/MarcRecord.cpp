@@ -100,3 +100,7 @@ QString MarcRecord::toString() const {
 
     return result;
 }
+
+void MarcRecord::parseSingle(QStringList &lines) {
+    // TODO implement
+}
