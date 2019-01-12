@@ -15,7 +15,7 @@ bool RecordField::isEmpty() const {
     return tag == 0 || (value.isEmpty() && subfields.isEmpty());
 }
 
-RecordField& RecordField::add(QChar code, QString value) {
+RecordField& RecordField::add(QChar code, const QString &value) {
     subfields.append(new SubField(code, value));
 
     return *this;
@@ -67,8 +67,17 @@ QList<SubField*> RecordField::getSubField(QChar code) const {
     return result;
 }
 
-RecordField* RecordField::parse(QString line) {
+RecordField* RecordField::parse(const QString &line) {
     RecordField *result = new RecordField;
+    TextNavigator navigator(line);
+    result->tag = fastParse32(navigator.readTo('#'));
+    result->value = navigator.readTo('^');
+    while (!navigator.eot()) {
+        QString chunk = navigator.readTo('^');
+        QChar code = chunk[0];
+        QString value = chunk.mid(1);
+        result->add(code, value);
+    }
 
     return result;
 }

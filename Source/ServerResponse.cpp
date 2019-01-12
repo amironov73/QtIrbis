@@ -82,10 +82,22 @@ void ServerResponse::checkReturnCode(qint32 allowed) {
     }
 }
 
-void ServerResponse::checkReturnCode(QVector<qint32> &allowed) {
+void ServerResponse::checkReturnCode(const QVector<qint32> &allowed) {
     qint32 rc = getReturnCode();
     if ((rc < 0) && !allowed.contains(rc)) {
         throw IrbisException(rc);
+    }
+}
+
+void ServerResponse::checkReturnCode(const qint32 *allowed) {
+    qint32 rc = getReturnCode();
+    if (rc < 0) {
+        while (*allowed != rc) {
+            if (*allowed == 0) {
+                break;
+            }
+            allowed++;
+        }
     }
 }
 

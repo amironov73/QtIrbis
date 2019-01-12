@@ -6,6 +6,7 @@ IrbisVersion::IrbisVersion()
     : organization(), version(), maxClients(0), connectedClients() {
 }
 
+// разбор ответа сервера
 IrbisVersion IrbisVersion::parse (ServerResponse &response) {
     QStringList lines = response.readRemainingAnsiLines();
     IrbisVersion result;
@@ -21,4 +22,11 @@ IrbisVersion IrbisVersion::parse (ServerResponse &response) {
     }
 
     return result;
+}
+
+QString IrbisVersion::toString() const {
+    return QString("organization=") + organization +
+        ", version=" + version +
+        ", maxClients=" + QString::number(maxClients) +
+        ", connectedClients=" + QString::number(connectedClients);
 }

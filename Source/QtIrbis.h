@@ -12,6 +12,41 @@
 
 //=========================================================
 
+class ClientQuery;
+class DatabaseInfo;
+class FoundLine;
+class IrbisException;
+class IrbisText;
+class MenuEntry;
+class MenuFile;
+class PostingParameters;
+class ProtocolText;
+class RawRecord;
+class SearchParameters;
+class SearchScenario;
+class ServerStat;
+class ServerResponse;
+class TableDefinition;
+class TermInfo;
+class TermParameters;
+class TermPosting;
+class UserInfo;
+
+//=========================================================
+
+enum RecordStatus
+{
+    LogicallyDeleted = 1,
+    PhysicallyDeleted = 2,
+    Deleted = LogicallyDeleted | PhysicallyDeleted,
+    Absent = 4,
+    NonActualized = 8,
+    Last = 32,
+    Locked = 64
+};
+
+//=========================================================
+
 class QTIRBIS_EXPORT SubField
 {
 public:
@@ -44,29 +79,16 @@ public:
 
     bool isEmpty() const;
 
-    RecordField& add(QChar code, QString value);
+    RecordField& add(QChar code, const QString &value);
     RecordField& clear();
     RecordField* clone() const;
     SubField* getFirstSubField(QChar code) const;
     QString getFirstSubFieldValue(QChar code) const;
     QList<SubField*> getSubField(QChar code) const;
 
-    static RecordField* parse(QString line);
+    static RecordField* parse(const QString &line);
 
     QString toString() const;
-};
-
-//=========================================================
-
-enum RecordStatus
-{
-    LogicallyDeleted = 1,
-    PhysicallyDeleted = 2,
-    Deleted = LogicallyDeleted | PhysicallyDeleted,
-    Absent = 4,
-    NonActualized = 8,
-    Last = 32,
-    Locked = 64
 };
 
 //=========================================================
@@ -83,7 +105,7 @@ public:
     MarcRecord() : database(), mfn(0), status(0), version(0), fields() {}
 
     MarcRecord& add(qint32 tag);
-    MarcRecord& add(quint32 tag, QString value);
+    MarcRecord& add(qint32 tag, const QString &value);
     MarcRecord& clear();
     MarcRecord* clone() const;
     QString fm(qint32 tag) const;
@@ -121,26 +143,6 @@ public:
 
 //=========================================================
 
-class ClientQuery;
-class DatabaseInfo;
-class FoundLine;
-class IrbisException;
-class MenuEntry;
-class MenuFile;
-class PostingParameters;
-class RawRecord;
-class SearchParameters;
-class SearchScenario;
-class ServerStat;
-class ServerResponse;
-class TableDefinition;
-class TermInfo;
-class TermParameters;
-class TermPosting;
-class UserInfo;
-
-//=========================================================
-
 class QTIRBIS_EXPORT IrbisDate
 {
 public:
@@ -155,6 +157,29 @@ public:
     static QString convert(QDate date);
     static QString today();
     static IrbisDate* safeParse(QString text);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IrbisText {
+public:
+    const static char CrLf[];
+    const static char Lf[];
+    const static QString IrbisDelimiter;
+    const static QString ShortDelimiter;
+    const static QString MsDosDelimiter;
+    const static QString UnixDelimiter;
+    const static QString SearchDelimiter;
+
+    static QString fromIrbisToDos(QString &text);
+    static QString fromDosToIrbis(QString &text);
+    static QString fromDosToUnix(QString &text);
+    static QStringList fromFullDelimiter (const QString &text);
+    static QStringList fromShortDelimiter (const QString &text);
+    static QString readAllAnsi(const QString &filename);
+    static QString readAllUtf(const QString &filename);
+    static QStringList readAnsiLines(const QString &filename);
+    static QStringList readUtfLines(const QString &filename);
 };
 
 //=========================================================
@@ -181,24 +206,28 @@ public:
     QString content;
 
     FileSpecification(): path(), database(), filename(), content() {}
-    FileSpecification(int path, QString database, QString filename);
+    FileSpecification(int path, const QString &filename);
+    FileSpecification(int path, const QString &database, const QString &filename);
 
     QString toString() const;
 };
 
 //=========================================================
 
+// информация о версии ИРБИС-сервера
 class QTIRBIS_EXPORT IrbisVersion
 {
 public:
-    QString organization;
-    QString version;
-    int maxClients;
-    int connectedClients;
+    QString organization; // на кого приобретен
+    QString version; // собственно версия, например, 64.2008.1
+    int maxClients; // максимальное количество подключений
+    int connectedClients; // текущее количество подключений
 
     IrbisVersion();
 
     static IrbisVersion parse (ServerResponse &response);
+
+    QString toString() const;
 };
 
 //=========================================================
@@ -237,6 +266,10 @@ public:
     QString acknowledged;
     QString lastCommand;
     QString commandNumber;
+
+    ClientInfo();
+
+    QString toString() const;
 };
 
 //=========================================================
@@ -246,11 +279,19 @@ class QTIRBIS_EXPORT DatabaseInfo
 public:
     QString name;
     QString description;
+    qint32 maxMfn;
+    QList<int> logicallyDeletedRecords;
+    QList<int> physicallyDeletedRecords;
+    QList<int> nonActualizedRecords;
+    QList<int> lockedRecords;
+    bool databaseLocked;
+    bool readOnly;
 
     DatabaseInfo();
 
     static DatabaseInfo parse(ServerResponse &response);
     static QList<DatabaseInfo> parse(MenuFile &menu);
+    QString toString() const;
 };
 
 //=========================================================
@@ -322,6 +363,13 @@ public:
 class QTIRBIS_EXPORT IrbisConnection
 {
 public:
+    static const qint32 MaxPacket = 32758;
+    static const QString AdministratorDatabaseList;
+    static const QString CatalogerDatabaseList;
+    static const QString ReaderDatabaseList;
+    static const qint32 ReadRecordCodes[];
+    static const qint32 ReadTermsCodes[];
+
     QString host;
     quint16 port;
     QString username;
@@ -404,13 +452,13 @@ public:
     ClientQuery(IrbisConnection *connection, QString commandCode);
 
     ClientQuery& add(int value);
-    ClientQuery& add(FileSpecification &specification);
-    ClientQuery& add(MarcRecord &record);
-    ClientQuery& add(RawRecord &record);
-    ClientQuery& addAnsi(QString &text);
-    ClientQuery& addAnsiNoLf(QString &text);
+    ClientQuery& add(const FileSpecification &specification);
+    ClientQuery& add(const MarcRecord &record);
+    ClientQuery& add(const RawRecord &record);
+    ClientQuery& addAnsi(const QString &text);
+    ClientQuery& addAnsiNoLf(const QString &text);
     ClientQuery& addLineFeed();
-    ClientQuery& addUtf(QString &text);
+    ClientQuery& addUtf(const QString &text);
     QByteArray encode();
 };
 
@@ -444,7 +492,8 @@ public:
 
     void checkReturnCode();
     void checkReturnCode(qint32 allowed);
-    void checkReturnCode(QVector<qint32> &allowed);
+    void checkReturnCode(const QVector<int> &allowed);
+    void checkReturnCode(const qint32 *allowed);
     void close();
     QByteArray getBinaryFile();
     QByteArray getLine();
@@ -529,7 +578,7 @@ public:
 
     RawRecord();
 
-    QString toString();
+    QString toString() const;
 };
 
 //=========================================================
@@ -633,9 +682,6 @@ public:
 //=========================================================
 
 class QTIRBIS_EXPORT UserInfo {
-private:
-    QString formatPair(QString prefix, QString &value, QString defaultValue);
-
 public:
     QString number;
     QString name;
@@ -667,12 +713,67 @@ public:
 
 //=========================================================
 
+class QTIRBIS_EXPORT EmbeddedField {
+public:
+    const static QChar DefaultCode;
+
+    static QList<RecordField> getEmbeddedFields(const RecordField &field, QChar sign = DefaultCode);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT TextNavigator {
+private:
+    qint32 _column, _length, _line, _position;
+    const QString &_text;
+
+public:
+
+    const static QChar EOT;
+
+    TextNavigator(const QString &text);
+    TextNavigator(const TextNavigator &other);
+
+    qint32 column() { return _column; }
+    qint32 line() { return _line; }
+    qint32 length() { return _length; }
+    qint32 position() { return _position; }
+    bool eot() const { return _position >= _length; }
+
+    QChar charAt(qint32 position) const;
+    QChar peekChar() const;
+    QChar readChar();
+    QString readLine();
+    bool isControl() const;
+    bool isDigit() const;
+    bool isLetter() const;
+    bool isWhitespace() const;
+    QString readTo(QChar stopChar);
+    QString readUntil(QChar stopChar);
+    QString remainingText() const;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT ProtocolText {
+public:
+
+    static const QString Delimiter;
+
+    static void encode(QTextStream &stream, const SubField &subField);
+    static void encode(QTextStream &stream, const RecordField &field);
+    static void encode(QTextStream &stream, const MarcRecord &record);
+    static QString encode(const MarcRecord &record);
+};
+
+//=========================================================
+
 // Utilities
 
 bool sameChar(QChar first, QChar second);
-bool sameString(QString first, QString second);
+bool sameString(const QString &first, const QString &second);
 
-qint32 fastParse32(QString &text);
+qint32 fastParse32(const QString &text);
 qint32 fastParse32(const char *text);
 qint32 fastParse32(const char *text, qint32 length);
 
@@ -680,6 +781,10 @@ QString fastToString(qint32 value);
 
 QString& iif(QString &s1, QString &s2);
 QString& iif(QString &s1, QString &s2, QString &s3);
+
+QString itemAt(const QStringList &list, qint32 index);
+
+QStringList maxSplit(const QString &text, QChar separator, qint32 count);
 
 //=========================================================
 

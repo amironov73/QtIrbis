@@ -34,6 +34,11 @@ SOURCES += QtIrbis.cpp \
     MenuEntry.cpp \
     RawRecord.cpp \
     IniFile.cpp \
-    IrbisVersion.cpp
+    IrbisVersion.cpp \
+    IrbisText.cpp \
+    EmbeddedField.cpp \
+    TextNavigator.cpp \
+    ProtocolText.cpp \
+    IrbisDate.cpp
 
 HEADERS += QtIrbis.h

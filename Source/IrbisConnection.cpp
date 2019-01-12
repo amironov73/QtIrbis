@@ -2,6 +2,13 @@
 
 //=========================================================
 
+const QString IrbisConnection::AdministratorDatabaseList = "dbnam1.mnu";
+const QString IrbisConnection::CatalogerDatabaseList = "dbnam2.mnu";
+const QString IrbisConnection::ReaderDatabaseList = "dbnam3.mnu";
+
+const qint32 IrbisConnection::ReadRecordCodes[] = { -201, -600, -602, -603, 0 };
+const qint32 IrbisConnection::ReadTermsCodes[] = { -202, -203, -204, 0 };
+
 IrbisConnection::IrbisConnection() :host("localhost"), port(6666),
     username(), password(), database("IBIS"), workstation('C'),
     clientId(0), queryId(0), isConnected(false), databaseStack() {

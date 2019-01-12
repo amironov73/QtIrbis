@@ -7,7 +7,7 @@ UserInfo::UserInfo()
     circulation(), acquisitions(), provision(), administrator() {
 }
 
-QString UserInfo::formatPair(QString prefix, QString &value, QString defaultValue) {
+static QString formatPair(QString prefix, const QString &value, QString defaultValue) {
     if (sameString(value, defaultValue)) {
         return "";
     }
@@ -17,18 +17,17 @@ QString UserInfo::formatPair(QString prefix, QString &value, QString defaultValu
 
 QString UserInfo::encode() {
     return name + "\r\n"
-            + password + "\r\n"
-            + formatPair("C", cataloger,     "irbisc.ini")
-            + formatPair("R", reader,        "irbisr.ini")
-            + formatPair("B", circulation,   "irbisb.ini")
-            + formatPair("M", acquisitions,  "irbism.ini")
-            + formatPair("K", provision,     "irbisk.ini")
-            + formatPair("A", administrator, "irbisa.ini");
+        + password + "\r\n"
+        + formatPair("C", cataloger,     "irbisc.ini")
+        + formatPair("R", reader,        "irbisr.ini")
+        + formatPair("B", circulation,   "irbisb.ini")
+        + formatPair("M", acquisitions,  "irbism.ini")
+        + formatPair("K", provision,     "irbisk.ini")
+        + formatPair("A", administrator, "irbisa.ini");
 }
 
 QList<UserInfo> UserInfo::parse (ServerResponse &response) {
     QList<UserInfo> result;
-
     int userCount = response.readInt32();
     int linesPerUser = response.readInt32();
     if (userCount == 0 || linesPerUser == 0) {
@@ -42,42 +41,15 @@ QList<UserInfo> UserInfo::parse (ServerResponse &response) {
         }
 
         UserInfo user;
-        qint32 length = lines.length();
-        if (length != 0) {
-            user.number = lines[0];
-        }
-
-        if (length > 1) {
-            user.name = lines[1];
-        }
-
-        if (length > 2) {
-            user.password = lines[2];
-        }
-
-        if (length > 3) {
-            user.cataloger = lines[3];
-        }
-
-        if (length > 4) {
-            user.reader = lines[4];
-        }
-
-        if (length > 5) {
-            user.circulation = lines[5];
-        }
-
-        if (length > 6) {
-            user.acquisitions = lines[6];
-        }
-
-        if (length > 7) {
-            user.provision = lines[7];
-        }
-
-        if (length > 8) {
-            user.administrator = lines[8];
-        }
+        user.number = itemAt(lines, 0);
+        user.name = itemAt(lines, 1);
+        user.password = itemAt(lines, 2);
+        user.cataloger = itemAt(lines, 3);
+        user.reader = itemAt(lines, 4);
+        user.circulation = itemAt(lines, 5);
+        user.acquisitions = itemAt(lines, 6);
+        user.provision = itemAt(lines, 7);
+        user.administrator = itemAt(lines, 8);
 
         result.append(user);
     }

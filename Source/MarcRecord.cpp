@@ -8,7 +8,7 @@ MarcRecord& MarcRecord::add(qint32 tag) {
     return *this;
 }
 
-MarcRecord& MarcRecord::add(quint32 tag, QString value) {
+MarcRecord& MarcRecord::add(qint32 tag, const QString &value) {
     fields.append(new RecordField(tag, value));
 
     return *this;
@@ -22,7 +22,10 @@ MarcRecord& MarcRecord::clear() {
 
 MarcRecord* MarcRecord::clone() const {
     MarcRecord *result = new MarcRecord();
+    result->database = database;
     result->mfn = mfn;
+    result->status = status;
+    result->version = version;
     foreach(const RecordField *item, fields) {
         result->fields.append(item->clone());
     }
@@ -102,5 +105,23 @@ QString MarcRecord::toString() const {
 }
 
 void MarcRecord::parseSingle(QStringList &lines) {
-    // TODO implement
+    if (lines.isEmpty()) {
+        return;
+    }
+
+    QString line = lines[0];
+    QStringList parts = line.split("#");
+    mfn = fastParse32(parts[0]);
+    status = fastParse32(itemAt(parts, 1));
+
+    line = lines[1];
+    parts = line.split("#");
+    version = fastParse32(parts[1]);
+
+    fields.clear();
+    qint32 length = lines.length();
+    for (int i = 2; i < length; i++) {
+        RecordField *field = RecordField::parse(lines[i]);
+        fields.append(field);
+    }
 }

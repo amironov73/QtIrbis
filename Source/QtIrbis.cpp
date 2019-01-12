@@ -6,11 +6,11 @@ bool sameChar(QChar first, QChar second) {
     return first.toUpper() == second.toUpper();
 }
 
-bool sameString(QString first, QString second) {
+bool sameString(const QString &first, const QString &second) {
     return first.compare(second, Qt::CaseInsensitive) == 0;
 }
 
-qint32 fastParse32(QString &text) {
+qint32 fastParse32(const QString &text) {
     qint32 result = 0, length = text.length();
     for (int offset = 0; offset < length; offset++) {
         result = result * 10 + text.at(offset).unicode() - '0';
@@ -78,3 +78,33 @@ QString& iif(QString &s1, QString &s2, QString &s3) {
     return s3;
 }
 
+QString itemAt(const QStringList &list, qint32 index) {
+    if ((index < 0) || (index >= list.size())) {
+        return QString();
+    }
+
+    return list[index];
+}
+
+QStringList maxSplit(const QString &text, QChar separator, qint32 count) {
+    QStringList result;
+
+    qint32 position = 0, length = text.length();
+    while ((count > 1) && (position < length)) {
+        int index = text.indexOf(separator, position);
+        if (index >= 0) {
+            result.append(text.mid(position, index - position));
+            position = index + 1;
+        } else {
+            result.append(text.mid(position));
+            break;
+        }
+        count++;
+    }
+
+    if (position < length) {
+        result.append(text.mid(position));
+    }
+
+    return result;
+}

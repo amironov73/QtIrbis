@@ -2,7 +2,12 @@
 
 //=========================================================
 
-FileSpecification::FileSpecification(int path, QString database, QString filename) : content() {
+FileSpecification::FileSpecification(int path, const QString &filename) : database(), content() {
+    this->path = path;
+    this->filename = filename;
+}
+
+FileSpecification::FileSpecification(int path, const QString &database, const QString &filename) : content() {
     this->path = path;
     this->database = database;
     this->filename = filename;

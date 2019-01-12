@@ -25,27 +25,27 @@ ClientQuery& ClientQuery::add(int value) {
     return addAnsi(text);
 }
 
-ClientQuery& ClientQuery::add(FileSpecification &specification) {
+ClientQuery& ClientQuery::add(const FileSpecification &specification) {
     QString text = specification.toString();
     return addAnsi(text);
 }
 
-ClientQuery& ClientQuery::add(MarcRecord &record) {
+ClientQuery& ClientQuery::add(const MarcRecord &record) {
     QString text = record.toString();
     return addUtf(text);
 }
 
-ClientQuery& ClientQuery::add(RawRecord &record) {
+ClientQuery& ClientQuery::add(const RawRecord &record) {
     QString text = record.toString();
     return addUtf(text);
 }
 
-ClientQuery& ClientQuery::addAnsi(QString &text) {
+ClientQuery& ClientQuery::addAnsi(const QString &text) {
     buffer.write(IrbisEncoding::ansi()->fromUnicode(text));
     return addLineFeed();
 }
 
-ClientQuery& ClientQuery::addAnsiNoLf(QString &text) {
+ClientQuery& ClientQuery::addAnsiNoLf(const QString &text) {
     buffer.write(IrbisEncoding::ansi()->fromUnicode(text));
     return *this;
 }
@@ -57,15 +57,16 @@ ClientQuery& ClientQuery::addLineFeed() {
     return *this;
 }
 
-ClientQuery& ClientQuery::addUtf(QString &text) {
+ClientQuery& ClientQuery::addUtf(const QString &text) {
     buffer.write(IrbisEncoding::utf()->fromUnicode(text));
     return addLineFeed();
 }
 
 QByteArray ClientQuery::encode() {
-    qint64 length = buffer.size();
-    QString prefixString = QString("%1\n").arg(length);
+    QString prefixString = QString::number(buffer.size());
     QByteArray prefixArray = IrbisEncoding::ansi()->fromUnicode(prefixString);
+    char data[] = { '\x0A' };
+    prefixArray.append(data, 1);
     QByteArray result = buffer.buffer();
     result.prepend(prefixArray);
 

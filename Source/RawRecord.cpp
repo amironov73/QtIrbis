@@ -6,7 +6,7 @@ RawRecord::RawRecord()
     : database(), mfn(), status(), version(), fields() {
 }
 
-QString RawRecord::toString() {
+QString RawRecord::toString() const {
     // TODO implement
 
     return QString();

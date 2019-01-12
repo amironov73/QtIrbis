@@ -2,5 +2,20 @@
 
 //=========================================================
 
+ClientInfo::ClientInfo()
+    : number(), ipAddress(), port(), name(), id(), workstation(),
+    registered(), acknowledged(), lastCommand(), commandNumber() {
+}
 
-
+QString ClientInfo::toString() const {
+    return QString("number=") + number +
+    ", ipAddress=" + ipAddress +
+    ", port=" + port +
+    ", name=" + name +
+    ", id=" + id +
+    ", workstation=" + workstation +
+    ", registered=" + registered +
+    ", acknowledged=" + acknowledged +
+    ", lastCommand=" + lastCommand +
+    ", commandNumber=" + commandNumber;
+}
