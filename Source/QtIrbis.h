@@ -12,244 +12,44 @@
 
 //=========================================================
 
+// Forward declaration
+
+class ClientInfo;
 class ClientQuery;
+class CommandCode;
 class DatabaseInfo;
+class EmbeddedField;
+class FileSpecification;
 class FoundLine;
+class IniFile;
+class IniLine;
+class IniSection;
+class IrbisConnection;
+class IrbisDate;
+class IrbisEncoding;
 class IrbisException;
+class IrbisFormat;
+class IrbisProcessInfo;
 class IrbisText;
+class IrbisVersion;
+class MarcRecord;
 class MenuEntry;
 class MenuFile;
 class PostingParameters;
 class ProtocolText;
 class RawRecord;
+class RecordField;
 class SearchParameters;
 class SearchScenario;
 class ServerStat;
 class ServerResponse;
+class SubField;
 class TableDefinition;
 class TermInfo;
 class TermParameters;
 class TermPosting;
+class TextNavigator;
 class UserInfo;
-
-//=========================================================
-
-enum RecordStatus
-{
-    LogicallyDeleted = 1,
-    PhysicallyDeleted = 2,
-    Deleted = LogicallyDeleted | PhysicallyDeleted,
-    Absent = 4,
-    NonActualized = 8,
-    Last = 32,
-    Locked = 64
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT SubField
-{
-public:
-    QChar code;
-    QString value;
-
-    SubField() : code('\0'), value() {}
-    SubField(QChar code);
-    SubField(QChar code, QString value);
-
-    bool isEmpty() const;
-
-    SubField* clone() const;
-
-    QString toString() const;
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT RecordField
-{
-public:
-    qint32 tag;
-    QString value;
-    QList<SubField*> subfields;
-
-    RecordField() : tag(0), value(), subfields() {}
-    RecordField(qint32 tag);
-    RecordField(qint32 tag, QString value);
-
-    bool isEmpty() const;
-
-    RecordField& add(QChar code, const QString &value);
-    RecordField& clear();
-    RecordField* clone() const;
-    SubField* getFirstSubField(QChar code) const;
-    QString getFirstSubFieldValue(QChar code) const;
-    QList<SubField*> getSubField(QChar code) const;
-
-    static RecordField* parse(const QString &line);
-
-    QString toString() const;
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT MarcRecord
-{
-public:
-    QString database;
-    qint32 mfn;
-    qint32 status;
-    qint32 version;
-    QList<RecordField*> fields;
-
-    MarcRecord() : database(), mfn(0), status(0), version(0), fields() {}
-
-    MarcRecord& add(qint32 tag);
-    MarcRecord& add(qint32 tag, const QString &value);
-    MarcRecord& clear();
-    MarcRecord* clone() const;
-    QString fm(qint32 tag) const;
-    QString fm(qint32 tag, QChar code) const;
-    QStringList fma(qint32 tag) const;
-    QStringList fma(qint32 tag, QChar code) const;
-    RecordField *getFirstField(qint32 tag) const;
-    bool isDeleted() const { return (status & RecordStatus::Deleted) != 0; }
-    void parseSingle(QStringList &lines);
-
-    QString toString() const;
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT IrbisEncoding
-{
-private:
-    static QTextCodec *_ansi;
-    static QTextCodec *_utf;
-
-public:
-    static QTextCodec* ansi();
-    static QTextCodec* utf();
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT IrbisFormat
-{
-public:
-    static QString removeComments(QString text);
-    static QString prepareFormat(QString text);
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT IrbisDate
-{
-public:
-    QString text;
-    QDateTime date;
-
-    IrbisDate(QString text);
-    IrbisDate(QDateTime date);
-
-    static QDateTime convert(QString text);
-    static QString convert(QDateTime date);
-    static QString convert(QDate date);
-    static QString today();
-    static IrbisDate* safeParse(QString text);
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT IrbisText {
-public:
-    const static char CrLf[];
-    const static char Lf[];
-    const static QString IrbisDelimiter;
-    const static QString ShortDelimiter;
-    const static QString MsDosDelimiter;
-    const static QString UnixDelimiter;
-    const static QString SearchDelimiter;
-
-    static QString fromIrbisToDos(QString &text);
-    static QString fromDosToIrbis(QString &text);
-    static QString fromDosToUnix(QString &text);
-    static QStringList fromFullDelimiter (const QString &text);
-    static QStringList fromShortDelimiter (const QString &text);
-    static QString readAllAnsi(const QString &filename);
-    static QString readAllUtf(const QString &filename);
-    static QStringList readAnsiLines(const QString &filename);
-    static QStringList readUtfLines(const QString &filename);
-};
-
-//=========================================================
-
-enum IrbisPath
-{
-    System = 0,
-    Data = 1,
-    MasterFile = 2,
-    InvertedFile = 3,
-    ParameterFile = 10,
-    FullText = 11,
-    InternalResource = 12
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT FileSpecification
-{
-public:
-    int path;
-    QString database;
-    QString filename;
-    QString content;
-
-    FileSpecification(): path(), database(), filename(), content() {}
-    FileSpecification(int path, const QString &filename);
-    FileSpecification(int path, const QString &database, const QString &filename);
-
-    QString toString() const;
-};
-
-//=========================================================
-
-// информация о версии ИРБИС-сервера
-class QTIRBIS_EXPORT IrbisVersion
-{
-public:
-    QString organization; // на кого приобретен
-    QString version; // собственно версия, например, 64.2008.1
-    int maxClients; // максимальное количество подключений
-    int connectedClients; // текущее количество подключений
-
-    IrbisVersion();
-
-    static IrbisVersion parse (ServerResponse &response);
-
-    QString toString() const;
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT IrbisProcessInfo
-{
-public:
-    QString number;
-    QString ipAddress;
-    QString name;
-    QString clientId;
-    QString workstation;
-    QString started;
-    QString lastCommand;
-    QString commandNumber;
-    QString processId;
-    QString state;
-
-    IrbisProcessInfo();
-
-    static QList<IrbisProcessInfo> parse(ServerResponse &response);
-};
 
 //=========================================================
 
@@ -274,34 +74,24 @@ public:
 
 //=========================================================
 
-class QTIRBIS_EXPORT DatabaseInfo
+class QTIRBIS_EXPORT ClientQuery
 {
+private:
+    IrbisConnection *connection;
+    QBuffer buffer;
+
 public:
-    QString name;
-    QString description;
-    qint32 maxMfn;
-    QList<int> logicallyDeletedRecords;
-    QList<int> physicallyDeletedRecords;
-    QList<int> nonActualizedRecords;
-    QList<int> lockedRecords;
-    bool databaseLocked;
-    bool readOnly;
+    ClientQuery(IrbisConnection *connection, const QString &commandCode);
 
-    DatabaseInfo();
-
-    static DatabaseInfo parse(ServerResponse &response);
-    static QList<DatabaseInfo> parse(MenuFile &menu);
-    QString toString() const;
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT IniFile {
-public:
-
-    IniFile();
-
-    static IniFile parse(QTextStream &stream);
+    ClientQuery& add(int value);
+    ClientQuery& add(const FileSpecification &specification);
+    ClientQuery& add(const MarcRecord &record);
+    ClientQuery& add(const RawRecord &record);
+    ClientQuery& addAnsi(const QString &text);
+    ClientQuery& addAnsiNoLf(const QString &text);
+    ClientQuery& addLineFeed();
+    ClientQuery& addUtf(const QString &text);
+    QByteArray encode();
 };
 
 //=========================================================
@@ -360,6 +150,147 @@ public:
 
 //=========================================================
 
+class QTIRBIS_EXPORT DatabaseInfo
+{
+public:
+    QString name;
+    QString description;
+    qint32 maxMfn;
+    QList<int> logicallyDeletedRecords;
+    QList<int> physicallyDeletedRecords;
+    QList<int> nonActualizedRecords;
+    QList<int> lockedRecords;
+    bool databaseLocked;
+    bool readOnly;
+
+    DatabaseInfo();
+
+    static DatabaseInfo parse(ServerResponse &response);
+    static QList<DatabaseInfo> parse(MenuFile &menu);
+    QString toString() const;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT EmbeddedField {
+public:
+    const static QChar DefaultCode;
+
+    static QList<RecordField> getEmbeddedFields(const RecordField &field, QChar sign = DefaultCode);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT FileSpecification
+{
+public:
+    bool binaryFile;
+    qint32 path;
+    QString database;
+    QString filename;
+    QString content;
+
+    FileSpecification();
+    FileSpecification(int path, const QString &filename);
+    FileSpecification(int path, const QString &database, const QString &filename);
+
+    static FileSpecification parse(const QString &text);
+    bool verify(bool throwException) const;
+
+    QString toString() const;
+};
+
+bool operator == (const FileSpecification &first, const FileSpecification &second);
+bool operator != (const FileSpecification &first, const FileSpecification &second);
+
+//=========================================================
+
+class QTIRBIS_EXPORT FoundLine {
+public:
+    bool materialized;
+    qint32 serialNumber;
+    qint32 mfn;
+    QObject icon;
+    bool selected;
+    QString description;
+    QString sort;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IniFile {
+public:
+    QList<IniSection> sections;
+
+    IniFile();
+
+    IniFile& clear();
+    bool containsSection (const QString &name) const;
+    IniSection& createSection(const QString &name);
+    bool isModified() const;
+    void notModified();
+    int getIndex(const QString &name) const;
+    IniSection* getSection(const QString &name) const;
+    const QString& getValue(const QString &sectionName, const QString &keyName, const QString &defaultValue) const;
+    void parse(QTextStream &stream);
+    IniFile& removeSection(const QString &sectionName);
+    IniFile& removeValue(const QString &sectionName, const QString &keyName);
+    IniFile& setValue(const QString &sectionName, const QString &keyName, const QString &value);
+    void write(const QString &filename, QTextCodec *encoding) const;
+    void writeModifiedOnly(QTextStream &stream) const;
+};
+
+QTextStream& operator << (QTextStream &stream, const IniFile &ini);
+
+//=========================================================
+
+class QTIRBIS_EXPORT IniLine {
+private:
+    bool modified;
+
+public:
+    QString key;
+    QString value;
+
+    IniLine(const QString &key="", const QString &line="");
+
+    bool isModified() const;
+    void notModified();
+    void setKey(const QString &newKey);
+    void setValue(const QString &newValue);
+    QString toString() const;
+};
+
+
+QTextStream& operator << (QTextStream &stream, const IniLine &line);
+
+//=========================================================
+
+class QTIRBIS_EXPORT IniSection {
+public:
+    QString name;
+    QList<IniLine> lines;
+
+    IniSection(const QString &name="");
+
+    IniSection& clear();
+    bool containsKey(const QString &key) const;
+    int getIndex(const QString &key) const;
+    IniLine* getLine(const QString &key) const;
+    const QString& getValue(const QString &key, const QString &defaultValue) const;
+    bool isModified() const;
+    void notModified();
+    IniSection& removeValue(const QString &key);
+    IniSection& setValue(const QString &key, const QString &value);
+    QString toString() const;
+
+    const QString& operator[] (const QString &index) const;
+};
+
+QTextStream& operator << (QTextStream &stream, const IniSection &section);
+
+//=========================================================
+
 class QTIRBIS_EXPORT IrbisConnection
 {
 public:
@@ -383,83 +314,375 @@ public:
 
     IrbisConnection();
 
-    void actualizeRecord(QString database, int mfn);
+    void actualizeRecord(const QString database, int mfn);
     void connect();
-    void createDatabase(QString databaseName, QString description, bool readerAccess);
-    void createDictionary(QString databaseName);
-    void deleteDatabase(QString databaseName);
+    void createDatabase(const QString databaseName, const QString description, bool readerAccess);
+    void createDictionary(const QString databaseName);
+    void deleteDatabase(const QString databaseName);
     void deleteRecord(int mfn);
     void disconnect();
     ServerResponse execute(ClientQuery &query);
     void executeAndForget(ClientQuery &query);
-    void executeAnsi(QString code);
-    void executeAnsi(QString code, QString &arg1);
-    QString formatRecord(QString &format, int mfn);
-    QString formatRecord(QString &format, MarcRecord &record);
-    QStringList formatRecords(QString &format, QList<int> mfns);
-    DatabaseInfo getDatabaseInfo(QString &databaseName);
-    int getMaxMfn(QString &databaseName);
+    void executeAnsi(const QString &code);
+    void executeAnsi(const QString &code, const QString &arg1);
+    QString formatRecord(const QString &format, int mfn);
+    QString formatRecord(const QString &format, MarcRecord &record);
+    QStringList formatRecords(const QString &format, const QList<int> &mfns);
+    DatabaseInfo getDatabaseInfo(const QString &databaseName);
+    int getMaxMfn(const QString &databaseName);
     ServerStat getServerStat();
     IrbisVersion getServerVersion();
     QList<UserInfo> getUserList();
-    QList<DatabaseInfo> listDatabases(IniFile &iniFile, QString defaultFileName);
-    QList<DatabaseInfo> listDatabases(FileSpecification &specification);
-    QStringList listFiles(FileSpecification &specification);
-    QStringList listFiles(QList<FileSpecification> specifications);
+    QList<DatabaseInfo> listDatabases(const IniFile &iniFile, const QString &defaultFileName);
+    QList<DatabaseInfo> listDatabases(const FileSpecification &specification);
+    QStringList listFiles(const FileSpecification &specification);
+    QStringList listFiles(const QList<FileSpecification> &specifications);
     QList<IrbisProcessInfo> listProcesses();
-    QString monitorOperation(QString operation);
+    QString monitorOperation(const QString &operation);
     void noOp();
-    void parseConnectionString(QString &connectionString);
+    void parseConnectionString(const QString &connectionString);
     QString popDatabase();
-    QString printTable(TableDefinition &definition);
-    QString pushDatabase(QString newDatabase);
-    QByteArray readBinaryFile(FileSpecification &specification);
-    IniFile readIniFile(FileSpecification &specification);
-    MenuFile readMenuFile(FileSpecification &specification);
-    QList<TermPosting> readPostings(PostingParameters &parameters);
-    RawRecord readRawRecord(QString &databaseName, qint32 mfn);
+    QString printTable(const TableDefinition &definition);
+    QString pushDatabase(const QString &newDatabase);
+    QByteArray readBinaryFile(const FileSpecification &specification);
+    IniFile readIniFile(const FileSpecification &specification);
+    MenuFile readMenuFile(const FileSpecification &specification);
+    QList<TermPosting> readPostings(const PostingParameters &parameters);
+    RawRecord readRawRecord(const QString &databaseName, qint32 mfn);
     MarcRecord readRecord(qint32 mfn);
-    MarcRecord readRecord(QString &databaseName, qint32 mfn);
-    MarcRecord readRecord(QString &databaseName, qint32 mfn, qint32 version);
-    QList<SearchScenario> readSearchScenario(FileSpecification &specification);
-    QList<TermInfo> readTerms(TermParameters &parameters);
-    QString readTextFile(FileSpecification &specification);
+    MarcRecord readRecord(const QString &databaseName, qint32 mfn);
+    MarcRecord readRecord(const QString &databaseName, qint32 mfn, qint32 version);
+    QList<SearchScenario> readSearchScenario(const FileSpecification &specification);
+    QList<TermInfo> readTerms(const TermParameters &parameters);
+    QString readTextFile(const FileSpecification &specification);
     QStringList readTextFiles(QList<FileSpecification> specifications);
-    void reloadDictionary(QString &databaseName);
-    void reloadMasterFile(QString &databaseName);
+    void reloadDictionary(const QString &databaseName);
+    void reloadMasterFile(const QString &databaseName);
     void restartServer();
-    QList<int> search(QString &expression);
-    QList<int> search(SearchParameters &parameters);
+    QList<int> search(const QString &expression);
+    QList<int> search(const SearchParameters &parameters);
     QString toConnectionString();
-    void truncateDatabase(QString &databaseName);
-    void unlockDatabase(QString &databaseName);
-    void unlockRecords(QString &databaseName, QList<int> mfnList);
+    void truncateDatabase(const QString &databaseName);
+    void unlockDatabase(const QString &databaseName);
+    void unlockRecords(const QString &databaseName, const QList<int> &mfnList);
     void updateIniFile(QStringList &lines);
-    qint32 writeRecord(MarcRecord &record);
     qint32 writeRecord(MarcRecord &record, bool lockFlag, bool actualize, bool dontParseResponse);
-    void writeTextFile(FileSpecification &specification);
+    void writeTextFile(const FileSpecification &specification);
 };
 
 //=========================================================
 
-class QTIRBIS_EXPORT ClientQuery
+class QTIRBIS_EXPORT IrbisDate
+{
+public:
+    QString text;
+    QDateTime date;
+
+    IrbisDate(const QString &text);
+    IrbisDate(QDateTime date);
+
+    static QDateTime convert(const QString &text);
+    static QString convert(QDateTime date);
+    static QString convert(QDate date);
+    static QString today();
+    static IrbisDate* safeParse(const QString &text);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IrbisEncoding
 {
 private:
-    IrbisConnection *connection;
-    QBuffer buffer;
+    static QTextCodec *_ansi;
+    static QTextCodec *_utf;
 
 public:
-    ClientQuery(IrbisConnection *connection, QString commandCode);
+    static QTextCodec* ansi();
+    static QTextCodec* utf();
+};
 
-    ClientQuery& add(int value);
-    ClientQuery& add(const FileSpecification &specification);
-    ClientQuery& add(const MarcRecord &record);
-    ClientQuery& add(const RawRecord &record);
-    ClientQuery& addAnsi(const QString &text);
-    ClientQuery& addAnsiNoLf(const QString &text);
-    ClientQuery& addLineFeed();
-    ClientQuery& addUtf(const QString &text);
-    QByteArray encode();
+//=========================================================
+
+class QTIRBIS_EXPORT IrbisException
+        : public QException
+{
+public:
+    qint32 code;
+
+    IrbisException() : code(0) {}
+    IrbisException(qint32 c) : code(c) {}
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IrbisFormat
+{
+public:
+    static QString removeComments(QString text);
+    static QString prepareFormat(QString text);
+};
+
+//=========================================================
+
+enum IrbisPath
+{
+    System = 0,
+    Data = 1,
+    MasterFile = 2,
+    InvertedFile = 3,
+    ParameterFile = 10,
+    FullText = 11,
+    InternalResource = 12
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IrbisProcessInfo
+{
+public:
+    QString number;
+    QString ipAddress;
+    QString name;
+    QString clientId;
+    QString workstation;
+    QString started;
+    QString lastCommand;
+    QString commandNumber;
+    QString processId;
+    QString state;
+
+    IrbisProcessInfo();
+
+    static QList<IrbisProcessInfo> parse(ServerResponse &response);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IrbisText {
+public:
+    const static char CrLf[];
+    const static char Lf[];
+    const static QString IrbisDelimiter;
+    const static QString ShortDelimiter;
+    const static QString MsDosDelimiter;
+    const static QString UnixDelimiter;
+    const static QString SearchDelimiter;
+
+    static QString fromIrbisToDos(QString &text);
+    static QString fromDosToIrbis(QString &text);
+    static QString fromDosToUnix(QString &text);
+    static QStringList fromFullDelimiter (const QString &text);
+    static QStringList fromShortDelimiter (const QString &text);
+    static QString readAllAnsi(const QString &filename);
+    static QString readAllUtf(const QString &filename);
+    static QStringList readAnsiLines(const QString &filename);
+    static QStringList readUtfLines(const QString &filename);
+};
+
+//=========================================================
+
+// информация о версии ИРБИС-сервера
+class QTIRBIS_EXPORT IrbisVersion
+{
+public:
+    QString organization; // на кого приобретен
+    QString version; // собственно версия, например, 64.2008.1
+    int maxClients; // максимальное количество подключений
+    int connectedClients; // текущее количество подключений
+
+    IrbisVersion();
+
+    static IrbisVersion parse (ServerResponse &response);
+
+    QString toString() const;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT MarcRecord
+{
+public:
+    QString database;
+    qint32 mfn;
+    qint32 status;
+    qint32 version;
+    QList<RecordField*> fields;
+
+    MarcRecord();
+
+    MarcRecord& add(qint32 tag);
+    MarcRecord& add(qint32 tag, const QString &value);
+    MarcRecord& clear();
+    MarcRecord* clone() const;
+    QString fm(qint32 tag) const;
+    QString fm(qint32 tag, QChar code) const;
+    QStringList fma(qint32 tag) const;
+    QStringList fma(qint32 tag, QChar code) const;
+    RecordField *getFirstField(qint32 tag) const;
+    bool isDeleted() const;
+    void parseSingle(QStringList &lines);
+
+    QString toString() const;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT MenuEntry {
+public:
+    QString code;
+    QString comment;
+
+    MenuEntry(const QString &code = "", const QString &comment = "");
+
+    QString toString() const;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT MenuFile {
+public:
+    const static QString StopMarker;
+    const static QChar Separators[];
+
+    QString fileName;
+    QList<MenuEntry> entries;
+
+    MenuFile();
+
+    MenuFile& add(const QString &code, const QString &comment);
+    MenuEntry* getEntry(const QString &code) const;
+    MenuEntry* getEntrySensitive(const QString &code) const;
+    QString* getValue(const QString &code) const;
+    QString* getValueSensitive(const QString &code) const;
+    const QString& getValue(const QString &code, const QString &defaultValue) const;
+    const QString& getValueSensitive(const QString &code, const QString &defaultValue) const;
+    static MenuFile parse(QTextStream &stream);
+    static MenuFile parseLocalFile(const QString &filename, const QTextCodec *encoding);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT ProtocolText {
+public:
+
+    static const QString Delimiter;
+
+    static void encode(QTextStream &stream, const SubField &subField);
+    static void encode(QTextStream &stream, const RecordField &field);
+    static void encode(QTextStream &stream, const MarcRecord &record);
+    static QString encode(const MarcRecord &record);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT PostingParameters {
+public:
+    QString database;
+    qint32 firstPosting;
+    QString format;
+    qint32 numberOfPostings;
+    QString term;
+    QStringList listOfTerms;
+
+    PostingParameters();
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT RawRecord {
+public:
+    QString database;
+    QString mfn;
+    QString status;
+    QString version;
+    QStringList fields;
+
+    RawRecord();
+
+    QString encode(const QString &delimiter) const;
+    void parseSingle(const QStringList &lines);
+    QString toString() const;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT RecordField
+{
+public:
+    qint32 tag;
+    QString value;
+    QList<SubField*> subfields;
+
+    RecordField() : tag(0), value(), subfields() {}
+    RecordField(qint32 tag);
+    RecordField(qint32 tag, QString value);
+
+    bool isEmpty() const;
+
+    RecordField& add(QChar code, const QString &value);
+    RecordField& clear();
+    RecordField* clone() const;
+    SubField* getFirstSubField(QChar code) const;
+    QString getFirstSubFieldValue(QChar code) const;
+    QList<SubField*> getSubField(QChar code) const;
+
+    static RecordField* parse(const QString &line);
+
+    QString toString() const;
+};
+
+//=========================================================
+
+enum RecordStatus
+{
+    LogicallyDeleted = 1,
+    PhysicallyDeleted = 2,
+    Deleted = LogicallyDeleted | PhysicallyDeleted,
+    Absent = 4,
+    NonActualized = 8,
+    Last = 32,
+    Locked = 64
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT SearchParameters {
+public:
+    QString database;
+    qint32 firstRecord;
+    QString formatSpecification;
+    qint32 maxMfn;
+    qint32 minMfn;
+    qint32 numberOfRecords;
+    QString searchExpression;
+    QString sequentialSpecification;
+    QString filterSpecification;
+    bool utfFormat;
+    bool nestedCall;
+
+    SearchParameters();
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT SearchScenario {
+public:
+    QString name;
+    QString prefix;
+    qint32 dictionaryType;
+    QString menuName;
+    QString oldFormat;
+    QString correction;
+    QString truncation;
+    QString hint;
+    QString modByDicAuto;
+    QString logic;
+    QString advance;
+    QString format;
+
+    SearchScenario();
+
+    static QList<SearchScenario> parse(const IniFile &iniFile);
 };
 
 //=========================================================
@@ -511,119 +734,6 @@ public:
 
 //=========================================================
 
-class QTIRBIS_EXPORT FoundLine {
-public:
-    bool materialized;
-    qint32 serialNumber;
-    qint32 mfn;
-    QObject icon;
-    bool selected;
-    QString description;
-    QString sort;
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT MenuEntry {
-public:
-    QString code;
-    QString comment;
-
-    MenuEntry(QString &code, QString &comment);
-
-    QString toString() const;
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT MenuFile {
-public:
-    const static QString StopMarker;
-
-    QString fileName;
-    QList<MenuEntry*> entries;
-
-    MenuFile();
-
-    MenuFile& add(QString &code, QString &comment);
-    MenuEntry* getEntry(QString &code);
-    QString* getValue(QString &code);
-    QString& getValue(QString &code, QString &defaultValue);
-    static MenuFile parse(QTextStream &stream);
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT PostingParameters {
-public:
-    QString database;
-    qint32 firstPosting;
-    QString format;
-    qint32 numberOfPostings;
-    QString term;
-    QStringList listOfTerms;
-
-    PostingParameters();
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT RawRecord {
-public:
-    QString database;
-    QString mfn;
-    QString status;
-    QString version;
-    QStringList fields;
-
-    RawRecord();
-
-    QString toString() const;
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT SearchParameters {
-public:
-    QString database;
-    qint32 firstRecord;
-    QString formatSpecification;
-    qint32 maxMfn;
-    qint32 minMfn;
-    qint32 numberOfRecords;
-    QString searchExpression;
-    QString sequentialSpecification;
-    QString filterSpecification;
-    bool utfFormat;
-    bool nestedCall;
-
-    SearchParameters();
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT SearchScenario {
-public:
-    QString name;
-    QString prefix;
-    qint32 dictionaryType;
-    QString menuName;
-    QString oldFormat;
-    QString correction;
-    QString truncation;
-    QString hint;
-    QString modByDicAuto;
-    QString logic;
-    QString advance;
-    QString format;
-
-    SearchScenario();
-
-    static QList<SearchScenario> parse(IniFile &iniFile);
-};
-
-//=========================================================
-
 class QTIRBIS_EXPORT ServerStat {
 public:
     QList<ClientInfo> runningClients;
@@ -632,6 +742,25 @@ public:
 
     ServerStat();
     static ServerStat parse(ServerResponse &response);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT SubField
+{
+public:
+    QChar code;
+    QString value;
+
+    SubField() : code('\0'), value() {}
+    SubField(QChar code);
+    SubField(QChar code, QString value);
+
+    bool isEmpty() const;
+
+    SubField* clone() const;
+
+    QString toString() const;
 };
 
 //=========================================================
@@ -647,6 +776,7 @@ public:
     qint32 maxMfn;
     QString sequentialQuery;
     QList<int> mfnList;
+
 };
 
 //=========================================================
@@ -677,47 +807,9 @@ public:
     qint32 occurrence;
     qint32 count;
     QString text;
-};
 
-//=========================================================
-
-class QTIRBIS_EXPORT UserInfo {
-public:
-    QString number;
-    QString name;
-    QString password;
-    QString cataloger;
-    QString reader;
-    QString circulation;
-    QString acquisitions;
-    QString provision;
-    QString administrator;
-
-    UserInfo();
-
-    QString encode();
-    static QList<UserInfo> parse (ServerResponse &response);
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT IrbisException
-        : public QException
-{
-public:
-    qint32 code;
-
-    IrbisException() : code(0) {}
-    IrbisException(qint32 c) : code(c) {}
-};
-
-//=========================================================
-
-class QTIRBIS_EXPORT EmbeddedField {
-public:
-    const static QChar DefaultCode;
-
-    static QList<RecordField> getEmbeddedFields(const RecordField &field, QChar sign = DefaultCode);
+    static QList<TermPosting> parse(ServerResponse &response);
+    QString toString() const;
 };
 
 //=========================================================
@@ -755,15 +847,22 @@ public:
 
 //=========================================================
 
-class QTIRBIS_EXPORT ProtocolText {
+class QTIRBIS_EXPORT UserInfo {
 public:
+    QString number;
+    QString name;
+    QString password;
+    QString cataloger;
+    QString reader;
+    QString circulation;
+    QString acquisitions;
+    QString provision;
+    QString administrator;
 
-    static const QString Delimiter;
+    UserInfo();
 
-    static void encode(QTextStream &stream, const SubField &subField);
-    static void encode(QTextStream &stream, const RecordField &field);
-    static void encode(QTextStream &stream, const MarcRecord &record);
-    static QString encode(const MarcRecord &record);
+    QString encode();
+    static QList<UserInfo> parse (ServerResponse &response);
 };
 
 //=========================================================
@@ -779,12 +878,13 @@ qint32 fastParse32(const char *text, qint32 length);
 
 QString fastToString(qint32 value);
 
-QString& iif(QString &s1, QString &s2);
-QString& iif(QString &s1, QString &s2, QString &s3);
+const QString& iif(const QString &s1, const QString &s2);
+const QString& iif(const QString &s1, const QString &s2, const QString &s3);
 
 QString itemAt(const QStringList &list, qint32 index);
 
 QStringList maxSplit(const QString &text, QChar separator, qint32 count);
+QStringList split(const QString &text, const QChar *separators);
 
 //=========================================================
 

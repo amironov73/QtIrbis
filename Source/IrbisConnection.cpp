@@ -14,10 +14,10 @@ IrbisConnection::IrbisConnection() :host("localhost"), port(6666),
     clientId(0), queryId(0), isConnected(false), databaseStack() {
 }
 
-void IrbisConnection::actualizeRecord(QString database, int mfn) {
+void IrbisConnection::actualizeRecord(const QString database, int mfn) {
     ClientQuery query (this, CommandCode::ActualizeRecord);
-    query.addAnsi(database);
-    query.add(mfn);
+    query.addAnsi(database)
+        .add(mfn);
 
     ServerResponse response = execute(query);
     response.checkReturnCode();
@@ -38,17 +38,17 @@ void IrbisConnection::connect() {
     isConnected = true;
 }
 
-void IrbisConnection::createDatabase(QString databaseName, QString description, bool readerAccess) {
+void IrbisConnection::createDatabase(const QString databaseName, const QString description, bool readerAccess) {
     ClientQuery query (this, CommandCode::CreateDatabase);
-    query.addAnsi(databaseName);
-    query.addAnsi(description);
-    query.add(readerAccess);
+    query.addAnsi(databaseName)
+        .addAnsi(description)
+        .add(readerAccess);
 
     ServerResponse response = execute(query);
     response.checkReturnCode();
 }
 
-void IrbisConnection::createDictionary(QString databaseName) {
+void IrbisConnection::createDictionary(const QString databaseName) {
     ClientQuery query (this, CommandCode::CreateDictionary);
     query.addAnsi(databaseName);
 
@@ -56,7 +56,7 @@ void IrbisConnection::createDictionary(QString databaseName) {
     response.checkReturnCode();
 }
 
-void IrbisConnection::deleteDatabase(QString databaseName) {
+void IrbisConnection::deleteDatabase(const QString databaseName) {
     ClientQuery query (this, CommandCode::DeleteDatabase);
     query.addAnsi(databaseName);
 
@@ -96,18 +96,18 @@ void IrbisConnection::executeAndForget(ClientQuery &query) {
     execute(query).close();
 }
 
-void IrbisConnection::executeAnsi(QString code) {
+void IrbisConnection::executeAnsi(const QString &code) {
     ClientQuery query (this, code);
     executeAndForget(query);
 }
 
-void IrbisConnection::executeAnsi(QString code, QString &arg1) {
+void IrbisConnection::executeAnsi(const QString &code, const QString &arg1) {
     ClientQuery query (this, code);
     query.addAnsi(arg1);
     executeAndForget(query);
 }
 
-QString IrbisConnection::formatRecord(QString &format, int mfn) {
+QString IrbisConnection::formatRecord(const QString &format, int mfn) {
     ClientQuery query (this, CommandCode::FormatRecord);
     query.addAnsi(database)
         .addAnsi(format)
@@ -121,9 +121,8 @@ QString IrbisConnection::formatRecord(QString &format, int mfn) {
     return result;
 }
 
-QString IrbisConnection::formatRecord(QString &format, MarcRecord &record) {
+QString IrbisConnection::formatRecord(const QString &format, MarcRecord &record) {
     QString prepared = IrbisFormat::prepareFormat(format);
-
     ClientQuery query (this, CommandCode::FormatRecord);
     query.addAnsi(database)
         .addAnsi(prepared)
@@ -137,13 +136,12 @@ QString IrbisConnection::formatRecord(QString &format, MarcRecord &record) {
     return result;
 }
 
-QStringList IrbisConnection::formatRecords(QString &format, QList<int> mfns) {
+QStringList IrbisConnection::formatRecords(const QString &format, const QList<int> &mfns) {
     if (mfns.isEmpty()) {
         return QStringList();
     }
 
     QString prepared = IrbisFormat::prepareFormat(format);
-
     ClientQuery query (this, CommandCode::FormatRecord);
     query.addAnsi(database)
         .addAnsi(prepared)
@@ -159,9 +157,10 @@ QStringList IrbisConnection::formatRecords(QString &format, QList<int> mfns) {
     return result;
 }
 
-DatabaseInfo IrbisConnection::getDatabaseInfo(QString &databaseName) {
+DatabaseInfo IrbisConnection::getDatabaseInfo(const QString &databaseName) {
     ClientQuery query(this, CommandCode::RecordList);
     query.addAnsi(databaseName);
+
     ServerResponse response = execute(query);
     response.checkReturnCode();
     DatabaseInfo result = DatabaseInfo::parse(response);
@@ -169,9 +168,10 @@ DatabaseInfo IrbisConnection::getDatabaseInfo(QString &databaseName) {
     return result;
 }
 
-int IrbisConnection::getMaxMfn(QString &databaseName) {
+int IrbisConnection::getMaxMfn(const QString &databaseName) {
     ClientQuery query (this, CommandCode::GetMaxMfn);
     query.addAnsiNoLf(databaseName);
+
     ServerResponse response = execute(query);
     response.checkReturnCode();
 
@@ -180,6 +180,7 @@ int IrbisConnection::getMaxMfn(QString &databaseName) {
 
 ServerStat IrbisConnection::getServerStat() {
     ClientQuery query(this, CommandCode::GetServerStat);
+
     ServerResponse response = execute(query);
     response.checkReturnCode();
     ServerStat result = ServerStat::parse(response);
@@ -207,33 +208,42 @@ QList<UserInfo> IrbisConnection::getUserList() {
     return result;
 }
 
-QList<DatabaseInfo> IrbisConnection::listDatabases(IniFile &iniFile, QString defaultFileName) {
-    // TODO implement
+QList<DatabaseInfo> IrbisConnection::listDatabases(const IniFile &iniFile, const QString &defaultFileName) {
+    QString fileName = iniFile.getValue("Main", "DBNNAMECAT", defaultFileName);
+    if (fileName.isNull()) {
+        return QList<DatabaseInfo>();
+    }
 
-    QList<DatabaseInfo> result;
-
-    return result;
-}
-
-QList<DatabaseInfo> IrbisConnection::listDatabases(FileSpecification &specification) {
+    FileSpecification specification(IrbisPath::Data, fileName);
     MenuFile menuFile = readMenuFile(specification);
     QList<DatabaseInfo> result = DatabaseInfo::parse(menuFile);
 
     return result;
 }
 
-QStringList IrbisConnection::listFiles(FileSpecification &specification) {
-    ClientQuery query(this, CommandCode::ListFiles);
-    query.add(specification);
-
-    ServerResponse response = execute(query);
-    QStringList result = response.readRemainingAnsiLines();
-    // TODO split from delimiters
+QList<DatabaseInfo> IrbisConnection::listDatabases(const FileSpecification &specification) {
+    MenuFile menuFile = readMenuFile(specification);
+    QList<DatabaseInfo> result = DatabaseInfo::parse(menuFile);
 
     return result;
 }
 
-QStringList IrbisConnection::listFiles(QList<FileSpecification> specifications) {
+QStringList IrbisConnection::listFiles(const FileSpecification &specification) {
+    ClientQuery query(this, CommandCode::ListFiles);
+    query.add(specification);
+
+    QStringList result;
+    ServerResponse response = execute(query);
+    QStringList lines = response.readRemainingAnsiLines();
+    for (auto line : lines) {
+        QStringList converted = IrbisText::fromFullDelimiter(line);
+        result.append(converted);
+    }
+
+    return result;
+}
+
+QStringList IrbisConnection::listFiles(const QList<FileSpecification> &specifications) {
     if (specifications.empty()) {
         return QStringList();
     }
@@ -259,7 +269,7 @@ QList<IrbisProcessInfo> IrbisConnection::listProcesses() {
     return result;
 }
 
-QString IrbisConnection::monitorOperation(QString operation) {
+QString IrbisConnection::monitorOperation(const QString &operation) {
     QString clientId = fastToString(this->clientId);
 
     while (true) {
@@ -271,14 +281,16 @@ QString IrbisConnection::monitorOperation(QString operation) {
                 found = true;
             }
         }
+
         if (!found) {
             break;
         }
+
         QThread::sleep(1000);
     }
 
     QString filename = clientId + ".ibf";
-    FileSpecification specification(IrbisPath::System, "", filename);
+    FileSpecification specification(IrbisPath::System, filename);
     QString result = readTextFile(specification);
 
     return result;
@@ -288,10 +300,10 @@ void IrbisConnection::noOp() {
     executeAnsi(CommandCode::Nop);
 }
 
-void IrbisConnection::parseConnectionString(QString &connectionString) {
+void IrbisConnection::parseConnectionString(const QString &connectionString) {
     QStringList items = connectionString.split(";");
     for (QString item : items) {
-        QStringList parts = item.split("="); // TODO: 2
+        QStringList parts = maxSplit(item, '=', 2);
         if (parts.length() != 2) {
             throw IrbisException();
         }
@@ -333,15 +345,25 @@ QString IrbisConnection::popDatabase() {
     return result;
 }
 
-QString IrbisConnection::printTable(TableDefinition &definition) {
-    // TODO implement
+QString IrbisConnection::printTable(const TableDefinition &definition) {
+    ClientQuery query(this, CommandCode::Print);
+    query.addAnsi(definition.database)
+        .addAnsi(definition.table)
+        .addAnsi("") // instead of headers
+        .addAnsi(definition.mode)
+        .addUtf(definition.searchQuery)
+        .add(definition.minMfn)
+        .add(definition.maxMfn)
+        .addUtf(definition.sequentialQuery)
+        .addAnsi(""); // instead of MFN list
 
-    QString result;
+    ServerResponse response = execute(query);
+    QString result = response.readRemainingUtfText();
 
     return result;
 }
 
-QString IrbisConnection::pushDatabase(QString newDatabase) {
+QString IrbisConnection::pushDatabase(const QString &newDatabase) {
     QString result = database;
     databaseStack.push_back(newDatabase);
     database = newDatabase;
@@ -349,7 +371,7 @@ QString IrbisConnection::pushDatabase(QString newDatabase) {
     return result;
 }
 
-QByteArray IrbisConnection::readBinaryFile(FileSpecification &specification) {
+QByteArray IrbisConnection::readBinaryFile(const FileSpecification &specification) {
     // TODO specification.isBinaryFile = true;
     ClientQuery query(this, CommandCode::ReadDocument);
     query.add(specification);
@@ -359,15 +381,16 @@ QByteArray IrbisConnection::readBinaryFile(FileSpecification &specification) {
     return result;
 }
 
-IniFile IrbisConnection::readIniFile(FileSpecification &specification) {
+IniFile IrbisConnection::readIniFile(const FileSpecification &specification) {
     QString text = readTextFile(specification);
     QTextStream stream(&text);
-    IniFile result = IniFile::parse(stream);
+    IniFile result;
+    result.parse(stream);
 
     return result;
 }
 
-MenuFile IrbisConnection::readMenuFile(FileSpecification &specification) {
+MenuFile IrbisConnection::readMenuFile(const FileSpecification &specification) {
     QString text = readTextFile(specification);
     QTextStream stream(&text);
     MenuFile result = MenuFile::parse(stream);
@@ -375,18 +398,39 @@ MenuFile IrbisConnection::readMenuFile(FileSpecification &specification) {
     return result;
 }
 
-QList<TermPosting> IrbisConnection::readPostings(PostingParameters &parameters) {
-    // TODO implement
+QList<TermPosting> IrbisConnection::readPostings(const PostingParameters &parameters) {
+    QString databaseName = iif(parameters.database, database);
+    ClientQuery query(this, CommandCode::ReadPostings);
+    query.addAnsi(databaseName)
+        .add(parameters.numberOfPostings)
+        .add(parameters.firstPosting)
+        .addAnsi(parameters.format);
+    if (parameters.listOfTerms.isEmpty()) {
+        query.addUtf(parameters.term);
+    } else {
+        for (auto term : parameters.listOfTerms) {
+            query.addUtf(term);
+        }
+    }
 
-    QList<TermPosting> result;
+    ServerResponse response = execute(query);
+    response.checkReturnCode(ReadTermsCodes);
+    QList<TermPosting> result = TermPosting::parse(response);
 
     return result;
 }
 
-RawRecord IrbisConnection::readRawRecord(QString &databaseName, qint32 mfn) {
-    // TODO implement
+RawRecord IrbisConnection::readRawRecord(const QString &databaseName, qint32 mfn) {
+    ClientQuery query(this, CommandCode::ReadRecord);
+    query.addAnsi(databaseName)
+        .add(mfn);
 
+    ServerResponse response = execute(query);
+    response.checkReturnCode(ReadRecordCodes);
+    QStringList lines = response.readRemainingUtfLines();
     RawRecord result;
+    result.parseSingle(lines);
+    result.database = databaseName;
 
     return result;
 }
@@ -395,13 +439,13 @@ MarcRecord IrbisConnection::readRecord(qint32 mfn) {
     return readRecord(database, mfn);
 }
 
-MarcRecord IrbisConnection::readRecord(QString &databaseName, qint32 mfn) {
+MarcRecord IrbisConnection::readRecord(const QString &databaseName, qint32 mfn) {
     ClientQuery query(this, CommandCode::ReadRecord);
     query.addAnsi(databaseName)
         .add(mfn);
 
     ServerResponse response = execute(query);
-    response.checkReturnCode(); // TODO add allowed codes
+    response.checkReturnCode(ReadRecordCodes);
     QStringList lines = response.readRemainingUtfLines();
     MarcRecord result;
     result.parseSingle(lines);
@@ -410,14 +454,14 @@ MarcRecord IrbisConnection::readRecord(QString &databaseName, qint32 mfn) {
     return result;
 }
 
-MarcRecord IrbisConnection::readRecord(QString &databaseName, qint32 mfn, qint32 version) {
+MarcRecord IrbisConnection::readRecord(const QString &databaseName, qint32 mfn, qint32 version) {
     ClientQuery query(this, CommandCode::ReadRecord);
     query.addAnsi(databaseName)
         .add(mfn)
         .add(version);
 
     ServerResponse response = execute(query);
-    response.checkReturnCode(); // TODO add allowed codes
+    response.checkReturnCode(ReadRecordCodes);
     QStringList lines = response.readRemainingUtfLines();
     MarcRecord result;
     result.parseSingle(lines);
@@ -427,20 +471,20 @@ MarcRecord IrbisConnection::readRecord(QString &databaseName, qint32 mfn, qint32
     return result;
 }
 
-QList<SearchScenario> IrbisConnection::readSearchScenario(FileSpecification &specification) {
+QList<SearchScenario> IrbisConnection::readSearchScenario(const FileSpecification &specification) {
     IniFile iniFile = readIniFile(specification);
     QList<SearchScenario> result = SearchScenario::parse(iniFile);
 
     return result;
 }
 
-QString IrbisConnection::readTextFile(FileSpecification &specification) {
+QString IrbisConnection::readTextFile(const FileSpecification &specification) {
     ClientQuery query(this, CommandCode::ReadDocument);
     query.add(specification);
 
     ServerResponse response = execute(query);
     QString result = response.readAnsi();
-    // TODO result = IrbisText::fromIrbisToDos(result);
+    result = IrbisText::fromIrbisToDos(result);
 
     return result;
 }
@@ -468,11 +512,11 @@ QStringList IrbisConnection::readTextFiles(QList<FileSpecification> specificatio
     return result;
 }
 
-void IrbisConnection::reloadDictionary(QString &databaseName) {
+void IrbisConnection::reloadDictionary(const QString &databaseName) {
     executeAnsi(CommandCode::ReloadDictionary, databaseName);
 }
 
-void IrbisConnection::reloadMasterFile(QString &databaseName) {
+void IrbisConnection::reloadMasterFile(const QString &databaseName) {
     executeAnsi(CommandCode::ReloadMasterFile, databaseName);
 }
 
@@ -480,7 +524,7 @@ void IrbisConnection::restartServer() {
     executeAnsi(CommandCode::RestartServer);
 }
 
-QList<int> IrbisConnection::search(QString &expression) {
+QList<int> IrbisConnection::search(const QString &expression) {
     SearchParameters parameters;
     parameters.database = database;
     parameters.searchExpression = expression;
@@ -490,17 +534,17 @@ QList<int> IrbisConnection::search(QString &expression) {
     return search(parameters);
 }
 
-QList<int> IrbisConnection::search(SearchParameters &parameters) {
-    QString &databaseName = iif(parameters.database, database);
+QList<int> IrbisConnection::search(const SearchParameters &parameters) {
+    const QString &databaseName = iif(parameters.database, database);
     ClientQuery query (this, CommandCode::Search);
-    query.addAnsi(databaseName);
-    query.addUtf(parameters.searchExpression);
-    query.add(parameters.numberOfRecords);
-    query.add(parameters.firstRecord);
-    query.addAnsi(parameters.formatSpecification);
-    query.add(parameters.minMfn);
-    query.add(parameters.maxMfn);
-    query.addAnsi(parameters.sequentialSpecification);
+    query.addAnsi(databaseName)
+        .addUtf(parameters.searchExpression)
+        .add(parameters.numberOfRecords)
+        .add(parameters.firstRecord)
+        .addAnsi(parameters.formatSpecification)
+        .add(parameters.minMfn)
+        .add(parameters.maxMfn)
+        .addAnsi(parameters.sequentialSpecification);
 
     ServerResponse response = execute(query);
     response.checkReturnCode();
@@ -528,15 +572,15 @@ QString IrbisConnection::toConnectionString() {
 }
 
 
-void IrbisConnection::truncateDatabase(QString &databaseName) {
+void IrbisConnection::truncateDatabase(const QString &databaseName) {
     executeAnsi(CommandCode::EmptyDatabase, databaseName);
 }
 
-void IrbisConnection::unlockDatabase(QString &databaseName) {
+void IrbisConnection::unlockDatabase(const QString &databaseName) {
     executeAnsi(CommandCode::UnlockDatabase, databaseName);
 }
 
-void IrbisConnection::unlockRecords(QString &databaseName, QList<int> mfnList) {
+void IrbisConnection::unlockRecords(const QString &databaseName, const QList<int> &mfnList) {
     if (mfnList.empty()) {
         return;
     }
@@ -563,11 +607,7 @@ void IrbisConnection::updateIniFile(QStringList &lines) {
     executeAndForget(query);
 }
 
-qint32 IrbisConnection::writeRecord(MarcRecord &record) {
-    return writeRecord(record, false, true, false);
-}
-
-qint32 IrbisConnection::writeRecord(MarcRecord &record, bool lockFlag, bool actualize, bool dontParseResponse) {
+qint32 IrbisConnection::writeRecord(MarcRecord &record, bool lockFlag=false, bool actualize=true, bool dontParseResponse=false) {
     QString databaseName = iif(record.database, database);
     ClientQuery query(this, CommandCode::UpdateRecord);
     query.addAnsi(databaseName)
@@ -587,7 +627,7 @@ qint32 IrbisConnection::writeRecord(MarcRecord &record, bool lockFlag, bool actu
     return response.returnCode;
 }
 
-void IrbisConnection::writeTextFile(FileSpecification &specification) {
+void IrbisConnection::writeTextFile(const FileSpecification &specification) {
     ClientQuery query(this, CommandCode::ReadDocument);
     query.add(specification);
     executeAndForget(query);

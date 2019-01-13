@@ -22,7 +22,6 @@ SOURCES += QtIrbis.cpp \
     CommandCode.cpp \
     UserInfo.cpp \
     ServerStat.cpp \
-    TableDefinition.cpp \
     MenuFile.cpp \
     FoundLine.cpp \
     PostingParameters.cpp \

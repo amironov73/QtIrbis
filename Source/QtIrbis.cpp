@@ -58,7 +58,7 @@ QString fastToString(qint32 value) {
     return QString(buffer + 9 - offset);
 }
 
-QString& iif(QString &s1, QString &s2) {
+const QString& iif(const QString &s1, const QString &s2) {
     if (!s1.isEmpty()) {
         return s1;
     }
@@ -66,7 +66,7 @@ QString& iif(QString &s1, QString &s2) {
     return s2;
 }
 
-QString& iif(QString &s1, QString &s2, QString &s3) {
+const QString& iif(const QString &s1, const QString &s2, const QString &s3) {
     if (!s1.isEmpty()) {
         return s1;
     }
@@ -104,6 +104,30 @@ QStringList maxSplit(const QString &text, QChar separator, qint32 count) {
 
     if (position < length) {
         result.append(text.mid(position));
+    }
+
+    return result;
+}
+
+QStringList split(const QString &text, const QChar *separators) {
+    QStringList result;
+
+    qint32 position = 0, length = text.length();
+    while (position < length) {
+        for (qint32 index = position; index < length; index++) {
+            QChar c = text[index];
+            for (const QChar *ptr = separators; (*ptr).unicode(); ptr++) {
+                if (*ptr == c) {
+                    if (index != position) {
+                        QString chunk = text.mid(position, index - position);
+                        result.append(chunk);
+                    }
+                    position = index + 1;
+                    goto nextIter;
+                }
+            }
+        }
+        nextIter:;
     }
 
     return result;

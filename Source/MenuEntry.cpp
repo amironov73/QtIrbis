@@ -2,7 +2,7 @@
 
 //=========================================================
 
-MenuEntry::MenuEntry(QString &code, QString &comment)
+MenuEntry::MenuEntry(const QString &code, const QString &comment)
     : code(code), comment(comment) {
 }
 

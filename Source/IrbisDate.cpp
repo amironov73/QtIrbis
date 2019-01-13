@@ -2,7 +2,7 @@
 
 //=========================================================
 
-IrbisDate::IrbisDate(QString text) {
+IrbisDate::IrbisDate(const QString &text) {
     this->text = text;
     this->date = convert(text);
 }
@@ -12,7 +12,7 @@ IrbisDate::IrbisDate(QDateTime date) {
     this->text = convert(date);
 }
 
-QDateTime IrbisDate::convert(QString text) {
+QDateTime IrbisDate::convert(const QString &text) {
     return QDateTime::fromString(text, "yyyyMMdd");
 }
 
@@ -24,7 +24,7 @@ QString IrbisDate::convert(QDate date) {
     return date.toString("yyyyMMdd");
 }
 
-IrbisDate* IrbisDate::safeParse(QString text) {
+IrbisDate* IrbisDate::safeParse(const QString &text) {
     if (text.isEmpty()) {
         return nullptr;
     }

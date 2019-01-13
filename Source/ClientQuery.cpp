@@ -2,7 +2,7 @@
 
 //=========================================================
 
-ClientQuery::ClientQuery(IrbisConnection *connection, QString commandCode)
+ClientQuery::ClientQuery(IrbisConnection *connection, const QString &commandCode)
     : buffer() {
     this->connection = connection;
     buffer.open(QIODevice::WriteOnly);

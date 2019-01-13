@@ -2,6 +2,9 @@
 
 //=========================================================
 
+MarcRecord::MarcRecord() : database(), mfn(0), status(0), version(0), fields() {
+}
+
 MarcRecord& MarcRecord::add(qint32 tag) {
     fields.append(new RecordField(tag));
 
@@ -86,6 +89,10 @@ RecordField* MarcRecord::getFirstField(qint32 tag) const {
     }
 
     return nullptr;
+}
+
+bool MarcRecord::isDeleted() const {
+    return (status & RecordStatus::Deleted) != 0;
 }
 
 QString MarcRecord::toString() const {

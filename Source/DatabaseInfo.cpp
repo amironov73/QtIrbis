@@ -37,8 +37,21 @@ DatabaseInfo DatabaseInfo::parse(ServerResponse &response) {
 
 QList<DatabaseInfo> DatabaseInfo::parse(MenuFile &menu) {
     QList<DatabaseInfo> result;
+    for (MenuEntry entry: menu.entries) {
+        QString name = entry.code;
+        QString description = entry.comment;
+        bool readOnly = false;
+        if (name.startsWith("-")) {
+            name = name.mid(1);
+            readOnly = true;
+        }
 
-    // TODO implement
+        DatabaseInfo info;
+        info.name = name;
+        info.description = description;
+        info.readOnly = readOnly;
+        result.append(info);
+    }
 
     return result;
 }
