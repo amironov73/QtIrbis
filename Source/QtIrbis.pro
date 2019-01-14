@@ -38,6 +38,7 @@ SOURCES += QtIrbis.cpp \
     EmbeddedField.cpp \
     TextNavigator.cpp \
     ProtocolText.cpp \
-    IrbisDate.cpp
+    IrbisDate.cpp \
+    Iso2709.cpp
 
 HEADERS += QtIrbis.h

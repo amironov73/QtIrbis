@@ -22,46 +22,16 @@ QList<IrbisProcessInfo> IrbisProcessInfo::parse(ServerResponse &response) {
         }
 
         IrbisProcessInfo process;
-        int length = lines.size();
-        if (length != 0) {
-            process.number = lines[0];
-        }
-
-        if (length > 1) {
-            process.ipAddress = lines[1];
-        }
-
-        if (length > 2) {
-            process.name = lines[2];
-        }
-
-        if (length > 3) {
-            process.clientId = lines[3];
-        }
-
-        if (length > 4) {
-            process.workstation = lines[4];
-        }
-
-        if (length > 5) {
-            process.started = lines[5];
-        }
-
-        if (length > 6) {
-            process.lastCommand = lines[6];
-        }
-
-        if (length > 7) {
-            process.commandNumber = lines[7];
-        }
-
-        if (length > 8) {
-            process.processId = lines[8];
-        }
-
-        if (length > 9) {
-            process.state = lines[9];
-        }
+        process.number = itemAt(lines, 0);
+        process.ipAddress = itemAt(lines, 1);
+        process.name = itemAt(lines, 2);
+        process.clientId = itemAt(lines, 3);
+        process.workstation = itemAt(lines, 4);
+        process.started = itemAt(lines, 5);
+        process.lastCommand = itemAt(lines, 6);
+        process.commandNumber = itemAt(lines, 7);
+        process.processId = itemAt(lines, 8);
+        process.state = itemAt(lines, 9);
 
         result.append(process);
     }

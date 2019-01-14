@@ -32,6 +32,7 @@ class IrbisFormat;
 class IrbisProcessInfo;
 class IrbisText;
 class IrbisVersion;
+class Iso2709;
 class MarcRecord;
 class MenuEntry;
 class MenuFile;
@@ -495,6 +496,20 @@ public:
     static IrbisVersion parse (ServerResponse &response);
 
     QString toString() const;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT Iso2709
+{
+public:
+    static const qint32 MarkerLength = 24;
+    static const char RecordDelimiter = 0x1D;
+    static const char FieldDelimiter = 0x1E;
+    static const char SubFieldDelimiter = 0x1F;
+
+    static MarcRecord* readRecord(QIODevice &device, QTextCodec &encoding);
+    static void writeRecord(QIODevice &device, const MarcRecord &record, QTextCodec &encoding);
 };
 
 //=========================================================
