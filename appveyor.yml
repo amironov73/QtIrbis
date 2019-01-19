@@ -11,6 +11,6 @@ build_script:
 artifacts:
   - path: Source\QtIrbis\release
     name: Binaries
-  - path: Tests\QtTests\release
+  - path: Source\QtTests\release
     name: Tests
 

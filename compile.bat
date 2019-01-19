@@ -24,6 +24,8 @@ rem Copy DLL
 rem -------------------------------------------------------
 
 copy /b Source\QtIrbis\release\*.dll Source\QtTests\release
+del Source\QtIrbis\release\*.obj > nul
+rmdir /s /q Source\QtIrbis\release\bearer > nul
 
 windeployqt -no-translations -no-compiler-runtime Source\QtIrbis\release\QtIrbis.dll
 windeployqt -no-translations -no-compiler-runtime Source\QtTests\release\QtTests.exe
