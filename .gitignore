@@ -46,3 +46,9 @@ CMakeLists.txt.user*
 
 # Jetbrains IDEA
 .idea
+
+# Visual Studio
+.vs
+*.DotSettings.user
+*.vcxproj.filters
+*.vcxproj.user
