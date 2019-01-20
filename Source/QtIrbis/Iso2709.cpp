@@ -48,12 +48,12 @@ MarcRecord* Iso2709::readRecord(QIODevice &device, QTextCodec &encoding) {
         int tag = fastParse32(record + directory, 3);
         int fieldLength = fastParse32(record + directory + 3, 4); //-V112
         int fieldOffset = baseAddress + fastParse32(record + directory + 7, 5);
-        RecordField *field = new RecordField(tag);
+        RecordField field(tag);
         result->fields.append(field);
         if (tag < 10) {
             // Фиксированное поле
             // не может содержать подполей и индикаторов
-            field->value = encoding.toUnicode(record + fieldOffset, fieldLength - 1);
+            field.value = encoding.toUnicode(record + fieldOffset, fieldLength - 1);
         } else {
             // Поле переменной длины
             // Содержит два однобайтных индикатора
@@ -74,7 +74,7 @@ MarcRecord* Iso2709::readRecord(QIODevice &device, QTextCodec &encoding) {
 
             // Если есть текст до первого разделителя, запоминаем его
             if (position != start) {
-                field->value = encoding.toUnicode(record + start, position - start);
+                field.value = encoding.toUnicode(record + start, position - start);
             }
 
             // Просматриваем подполя
@@ -87,9 +87,9 @@ MarcRecord* Iso2709::readRecord(QIODevice &device, QTextCodec &encoding) {
                     }
                     position++;
                 }
-                SubField *subField = new SubField(record[start + 1]);
-                subField->value = encoding.toUnicode(record + start + 2, position - start - 1);
-                field->subfields.append(subField);
+                SubField subField(record[start + 1]);
+                subField.value = encoding.toUnicode(record + start + 2, position - start - 1);
+                field.subfields.append(subField);
                 start = position;
             }
         }
@@ -138,30 +138,30 @@ void Iso2709::writeRecord(QIODevice &device, const MarcRecord &record, QTextCode
     // Сначала подсчитываем общую длину
     for (int i = 0; i < record.fields.size(); i++) {
         dictionaryLength += 12; // одна статья справочника
-        RecordField *field = record.fields[i];
+        const RecordField &field = record.fields[i];
 
-        if ((field->tag <= 0) || (field->tag >= 1000)) {
+        if ((field.tag <= 0) || (field.tag >= 1000)) {
             delete []fieldLength;
             throw IrbisException();
         }
 
         int fldlen = 0;
-        if (field->tag < 10) {
+        if (field.tag < 10) {
             // В фиксированном поле не бывает подполей и индикаторов
-            fldlen += countBytes(field->value, encoding);
+            fldlen += countBytes(field.value, encoding);
         } else {
             fldlen += 2; // индиакторы
-            fldlen += countBytes(field->value, encoding);
-            for (int j = 0; j < field->subfields.size(); j++) {
-                SubField *subfield = field->subfields[j];
+            fldlen += countBytes(field.value, encoding);
+            for (int j = 0; j < field.subfields.size(); j++) {
+                const SubField &subfield = field.subfields[j];
 
-                if ((subfield->code) <= ' ' || (subfield->code >= 127)) {
+                if ((subfield.code) <= ' ' || (subfield.code >= 127)) {
                     delete []fieldLength;
                     throw IrbisException();
                 }
 
                 fldlen += 2; // признак подполя и его код
-                fldlen += countBytes(subfield->value, encoding);
+                fldlen += countBytes(subfield.value, encoding);
             }
         }
 
@@ -212,32 +212,32 @@ void Iso2709::writeRecord(QIODevice &device, const MarcRecord &record, QTextCode
 
     // Проходим по полям
     for (int i = 0; i < record.fields.size(); i++) {
-        RecordField *field = record.fields[i];
+        const RecordField &field = record.fields[i];
 
         // Справочник
-        encode(bytes, dictionaryPosition, 3, field->tag);
+        encode(bytes, dictionaryPosition, 3, field.tag);
         encode(bytes, dictionaryPosition + 3, 4, fieldLength[i]); //-V112
         encode(bytes, dictionaryPosition + 7, 5, currentAddress - baseAddress);
         dictionaryPosition += 12;
 
         // Собственно поле
-        if (field->tag < 10) {
+        if (field.tag < 10) {
             // В фиксированных полях не бывает подполей и индикаторов
-            currentAddress = encode(bytes, currentAddress, field->value, encoding);
+            currentAddress = encode(bytes, currentAddress, field.value, encoding);
         } else {
             // Индискаторы
             bytes[currentAddress++] = ' ';
             bytes[currentAddress++] = ' ';
 
             // Значение поля
-            currentAddress = encode(bytes, currentAddress, field->value, encoding);
+            currentAddress = encode(bytes, currentAddress, field.value, encoding);
 
             // Подполя
-            for (int j = 0; j < field->subfields.size(); j++) {
-                SubField *subfield = field->subfields[j];
+            for (int j = 0; j < field.subfields.size(); j++) {
+                const SubField &subfield = field.subfields[j];
                 bytes[currentAddress++] = SubFieldDelimiter;
-                bytes[currentAddress++] = static_cast<char>(subfield->code.unicode());
-                currentAddress = encode(bytes, currentAddress, subfield->value, encoding);
+                bytes[currentAddress++] = static_cast<char>(subfield.code.unicode());
+                currentAddress = encode(bytes, currentAddress, subfield.value, encoding);
             }
         }
 

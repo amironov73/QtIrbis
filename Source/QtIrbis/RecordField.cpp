@@ -8,7 +8,15 @@
 RecordField::RecordField(qint32 tag) : tag(tag) {
 }
 
-RecordField::RecordField(qint32 tag, QString value) : tag(tag), value(value) {
+RecordField::RecordField(qint32 tag, const QString &value) : tag(tag), value(value) {
+}
+
+RecordField::RecordField(const RecordField &other)
+    : tag(other.tag), value(other.value), subfields() {
+    for(auto sub : other.subfields) {
+        SubField copy(sub.code, sub.value);
+        subfields.append(copy);
+    }
 }
 
 bool RecordField::isEmpty() const {
@@ -16,7 +24,7 @@ bool RecordField::isEmpty() const {
 }
 
 RecordField& RecordField::add(QChar code, const QString &value) {
-    subfields.append(new SubField(code, value));
+    subfields.append(SubField(code, value));
 
     return *this;
 }
@@ -27,19 +35,10 @@ RecordField& RecordField::clear() {
     return *this;
 }
 
-RecordField* RecordField::clone() const {
-    RecordField *result = new RecordField(tag, value);
-    foreach (const SubField *item, subfields) {
-        result->subfields.append(item->clone());
-    }
-
-    return result;
-}
-
 SubField* RecordField::getFirstSubField(QChar code) const {
-    foreach (SubField *item, subfields) {
-        if (sameChar(item->code, code)) {
-            return item;
+    for(auto iter=subfields.begin(); iter != subfields.end(); ++iter) {
+        if (sameChar(iter->code, code)) {
+            return const_cast<SubField*>(&*iter);
         }
     }
 
@@ -47,19 +46,19 @@ SubField* RecordField::getFirstSubField(QChar code) const {
 }
 
 QString RecordField::getFirstSubFieldValue(QChar code) const {
-    foreach (SubField *item, subfields) {
-        if (sameChar(item->code, code)) {
-            return item->value;
+    for (auto item : subfields) {
+        if (sameChar(item.code, code)) {
+            return item.value;
         }
     }
 
     return QString();
 }
 
-QList<SubField*> RecordField::getSubField(QChar code) const {
-    QList<SubField*> result;
-    foreach (SubField *item, subfields) {
-        if (sameChar(item->code, code)) {
+QList<SubField> RecordField::getSubField(QChar code) const {
+    QList<SubField> result;
+    for (auto item : subfields) {
+        if (sameChar(item.code, code)) {
             result.append(item);
         }
     }
@@ -67,16 +66,16 @@ QList<SubField*> RecordField::getSubField(QChar code) const {
     return result;
 }
 
-RecordField* RecordField::parse(const QString &line) {
-    RecordField *result = new RecordField;
+RecordField RecordField::parse(const QString &line) {
+    RecordField result;
     TextNavigator navigator(line);
-    result->tag = fastParse32(navigator.readTo('#'));
-    result->value = navigator.readTo('^');
+    result.tag = fastParse32(navigator.readTo('#'));
+    result.value = navigator.readTo('^');
     while (!navigator.eot()) {
         QString chunk = navigator.readTo('^');
         QChar code = chunk[0];
         QString value = chunk.mid(1);
-        result->add(code, value);
+        result.add(code, value);
     }
 
     return result;
@@ -84,8 +83,8 @@ RecordField* RecordField::parse(const QString &line) {
 
 QString RecordField::toString() const {
     QString result = QString("%1%2").arg(tag).arg(value);
-    foreach (const SubField *item, subfields) {
-        result.append(item->toString());
+    for (auto item : subfields) {
+        result.append(item.toString());
     }
 
     return result;

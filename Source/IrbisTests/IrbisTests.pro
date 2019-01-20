@@ -5,7 +5,18 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES +=  tst_alltests.cpp
+SOURCES +=  AllTests.cpp \
+    SubFieldTest.cpp \
+    RecordFieldTest.cpp \
+    MarcRecordTest.cpp \
+    ClientQueryTest.cpp \
+    FileSpecificationTest.cpp \
+    IrbisDateTest.cpp \
+    IrbisEncodingTest.cpp \
+    IrbisFormatTest.cpp \
+    TextNavigatorTest.cpp
+
+HEADERS += IrbisTests.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../QtIrbis/release/ -lQtIrbis
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../QtIrbis/debug/ -lQtIrbis

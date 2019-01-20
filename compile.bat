@@ -23,15 +23,16 @@ rem -------------------------------------------------------
 rem Copy DLL
 rem -------------------------------------------------------
 
-copy /b Source\QtIrbis\release\*.dll Source\QtTests\release
+copy /b Source\QtIrbis\release\*.dll Source\IrbisTests\release
 del Source\QtIrbis\release\*.obj > nul
-rmdir /s /q Source\QtIrbis\release\bearer > nul
 
 windeployqt -no-translations -no-compiler-runtime Source\QtIrbis\release\QtIrbis.dll
-windeployqt -no-translations -no-compiler-runtime Source\QtTests\release\QtTests.exe
+windeployqt -no-translations -no-compiler-runtime Source\IrbisTests\release\IrbisTests.exe
+
+rmdir /s /q Source\QtIrbis\release\bearer > nul
 
 rem -------------------------------------------------------
 rem Run tests
 rem -------------------------------------------------------
 
-Source\QtTests\release\QtTests.exe
+Source\IrbisTests\release\IrbisTests.exe

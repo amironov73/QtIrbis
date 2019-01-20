@@ -13,16 +13,16 @@ void ProtocolText::encode(QTextStream &stream, const SubField &subField) {
 
 void ProtocolText::encode(QTextStream &stream, const RecordField &field) {
     stream << field.tag << "#" << field.value;
-    for (const SubField *item : field.subfields) {
-        encode(stream, *item);
+    for (auto item : field.subfields) {
+        encode(stream, item);
     }
 }
 
 void ProtocolText::encode(QTextStream &stream, const MarcRecord &record) {
     stream << record.mfn << "#" << record.status << Delimiter;
     stream << 0 << "#" << record.version << Delimiter;
-    for (const RecordField *item : record.fields) {
-        encode(stream, *item);
+    for (auto item : record.fields) {
+        encode(stream, item);
         stream << Delimiter;
     }
 }

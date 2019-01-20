@@ -521,14 +521,14 @@ public:
     qint32 mfn;
     qint32 status;
     qint32 version;
-    QList<RecordField*> fields;
+    QList<RecordField> fields;
 
     MarcRecord();
+    MarcRecord(const MarcRecord &other);
 
     MarcRecord& add(qint32 tag);
     MarcRecord& add(qint32 tag, const QString &value);
     MarcRecord& clear();
-    MarcRecord* clone() const;
     QString fm(qint32 tag) const;
     QString fm(qint32 tag, QChar code) const;
     QStringList fma(qint32 tag) const;
@@ -626,22 +626,22 @@ class QTIRBIS_EXPORT RecordField
 public:
     qint32 tag;
     QString value;
-    QList<SubField*> subfields;
+    QList<SubField> subfields;
 
     RecordField() : tag(0), value(), subfields() {}
     RecordField(qint32 tag);
-    RecordField(qint32 tag, QString value);
+    RecordField(qint32 tag, const QString &value);
+    RecordField(const RecordField &other);
 
     bool isEmpty() const;
 
     RecordField& add(QChar code, const QString &value);
     RecordField& clear();
-    RecordField* clone() const;
     SubField* getFirstSubField(QChar code) const;
     QString getFirstSubFieldValue(QChar code) const;
-    QList<SubField*> getSubField(QChar code) const;
+    QList<SubField> getSubField(QChar code) const;
 
-    static RecordField* parse(const QString &line);
+    static RecordField parse(const QString &line);
 
     QString toString() const;
 };
@@ -770,11 +770,9 @@ public:
     SubField() : code('\0'), value() {}
     SubField(QChar code);
     SubField(QChar code, QString value);
+    SubField(const SubField &other);
 
     bool isEmpty() const;
-
-    SubField* clone() const;
-
     QString toString() const;
 };
 

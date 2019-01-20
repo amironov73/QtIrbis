@@ -11,12 +11,11 @@ SubField::SubField(QChar code)  : code(code) {
 SubField::SubField(QChar code, QString value) : code(code), value(value) {
 }
 
-bool SubField::isEmpty() const {
-    return code.isNull() || value.isEmpty();
+SubField::SubField(const SubField &other) : code(other.code), value(other.value) {
 }
 
-SubField* SubField::clone() const {
-    return new SubField(code, value);
+bool SubField::isEmpty() const {
+    return code.isNull() || value.isEmpty();
 }
 
 QString SubField::toString() const {

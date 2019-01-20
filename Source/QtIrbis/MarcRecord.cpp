@@ -8,14 +8,25 @@
 MarcRecord::MarcRecord() : database(), mfn(0), status(0), version(0), fields() {
 }
 
+MarcRecord::MarcRecord(const MarcRecord &other) {
+    database = other.database;
+    mfn = other.mfn;
+    status = other.status;
+    version = other.version;
+    for(auto item : other.fields) {
+        RecordField copy(item);
+        fields.append(copy);
+    }
+}
+
 MarcRecord& MarcRecord::add(qint32 tag) {
-    fields.append(new RecordField(tag));
+    fields.append(RecordField(tag));
 
     return *this;
 }
 
 MarcRecord& MarcRecord::add(qint32 tag, const QString &value) {
-    fields.append(new RecordField(tag, value));
+    fields.append(RecordField(tag, value));
 
     return *this;
 }
@@ -26,23 +37,10 @@ MarcRecord& MarcRecord::clear() {
     return *this;
 }
 
-MarcRecord* MarcRecord::clone() const {
-    MarcRecord *result = new MarcRecord();
-    result->database = database;
-    result->mfn = mfn;
-    result->status = status;
-    result->version = version;
-    foreach(const RecordField *item, fields) {
-        result->fields.append(item->clone());
-    }
-
-    return result;
-}
-
 QString MarcRecord::fm(qint32 tag) const {
-    foreach(const RecordField *item, fields) {
-        if (item->tag == tag) {
-            return item->value;
+    for(auto item : fields) {
+        if (item.tag == tag) {
+            return item.value;
         }
     }
 
@@ -50,9 +48,9 @@ QString MarcRecord::fm(qint32 tag) const {
 }
 
 QString MarcRecord::fm(qint32 tag, QChar code) const {
-    foreach(const RecordField *item, fields) {
-        if (item->tag == tag) {
-            return item->getFirstSubFieldValue(code);
+    for(auto item : fields) {
+        if (item.tag == tag) {
+            return item.getFirstSubFieldValue(code);
         }
     }
 
@@ -61,9 +59,9 @@ QString MarcRecord::fm(qint32 tag, QChar code) const {
 
 QStringList MarcRecord::fma(qint32 tag) const {
     QStringList result;
-    foreach(const RecordField *item, fields) {
-        if (item->tag == tag && !item->value.isEmpty()) {
-            result.append(item->value);
+    for(auto item : fields) {
+        if (item.tag == tag && !item.value.isEmpty()) {
+            result.append(item.value);
         }
     }
 
@@ -72,9 +70,9 @@ QStringList MarcRecord::fma(qint32 tag) const {
 
 QStringList MarcRecord::fma(qint32 tag, QChar code) const {
     QStringList result;
-    foreach (const RecordField *item, fields) {
-        if (item->tag == tag) {
-            QString value = item->getFirstSubFieldValue(code);
+    for(auto item : fields) {
+        if (item.tag == tag) {
+            QString value = item.getFirstSubFieldValue(code);
             if (!value.isEmpty()) {
                 result.append(value);
             }
@@ -85,9 +83,9 @@ QStringList MarcRecord::fma(qint32 tag, QChar code) const {
 }
 
 RecordField* MarcRecord::getFirstField(qint32 tag) const {
-    foreach (RecordField *item, fields) {
-        if (item->tag == tag) {
-            return item;
+    for(auto iter=fields.begin(); iter != fields.end(); ++iter) {
+        if (iter->tag == tag) {
+            return const_cast<RecordField*>(&*iter);
         }
     }
 
@@ -101,13 +99,13 @@ bool MarcRecord::isDeleted() const {
 QString MarcRecord::toString() const {
     QString result;
     bool first = true;
-    foreach (const RecordField *item, fields) {
+    for (auto item : fields) {
         if (first) {
-            result = item->toString();
+            result = item.toString();
             first = false;
         }
         else {
-            result = result + "\n" + item->toString();
+            result = result + "\n" + item.toString();
         }
     }
 
@@ -131,7 +129,7 @@ void MarcRecord::parseSingle(QStringList &lines) {
     fields.clear();
     qint32 length = lines.length();
     for (int i = 2; i < length; i++) {
-        RecordField *field = RecordField::parse(lines[i]);
+        RecordField field = RecordField::parse(lines[i]);
         fields.append(field);
     }
 }
