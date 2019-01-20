@@ -5,10 +5,9 @@
 
 //=========================================================
 
-static const int LengthOfLength = 5;
+static const qint32 LengthOfLength = 5;
 
 MarcRecord* Iso2709::readRecord(QIODevice &device, QTextCodec &encoding) {
-    MarcRecord *result = nullptr;
 
     // Считываем длину записи
     char marker[LengthOfLength];
@@ -17,9 +16,9 @@ MarcRecord* Iso2709::readRecord(QIODevice &device, QTextCodec &encoding) {
     }
 
     // а затем и ее остаток
-    unsigned int recordLength = static_cast<unsigned int>(fastParse32(marker, 5));
+    const qint32 recordLength = fastParse32(marker, 5);
     char *record = new char[recordLength];
-    int need = static_cast<int>(recordLength - LengthOfLength);
+    const int need = static_cast<int>(recordLength - LengthOfLength);
     if (device.read(record + LengthOfLength, need) != need) {
         delete []record;
         return nullptr;
@@ -32,13 +31,12 @@ MarcRecord* Iso2709::readRecord(QIODevice &device, QTextCodec &encoding) {
         return nullptr;
     }
 
-    int indicatorLength = fastParse32(record + 10, 1); // как правило, 2
-    int baseAddress = fastParse32(record + 12, 5);
-
-    result = new MarcRecord;
+    const qint32 baseAddress = fastParse32(record + 12, 5);
+    const qint32 indicatorLength = fastParse32(record + 10, 1); // как правило, 2
+    MarcRecord *result = new MarcRecord;
 
     // Пошли по полям при помощи справочника
-    for (int directory = MarkerLength;; directory += 12) {
+    for (qint32 directory = MarkerLength;; directory += 12) {
         // Переходим к очередному полю.
         // Если нарвались на разделитель, значит, справочник закончился
         if (record[directory] == FieldDelimiter) {
@@ -46,8 +44,8 @@ MarcRecord* Iso2709::readRecord(QIODevice &device, QTextCodec &encoding) {
         }
 
         int tag = fastParse32(record + directory, 3);
-        int fieldLength = fastParse32(record + directory + 3, 4); //-V112
-        int fieldOffset = baseAddress + fastParse32(record + directory + 7, 5);
+        const qint32 fieldLength = fastParse32(record + directory + 3, 4); //-V112
+        const qint32 fieldOffset = baseAddress + fastParse32(record + directory + 7, 5);
         RecordField field(tag);
         result->fields.append(field);
         if (tag < 10) {
@@ -60,9 +58,9 @@ MarcRecord* Iso2709::readRecord(QIODevice &device, QTextCodec &encoding) {
             // Может содержать подполя
 
             // Пропускаем индикаторы
-            int start = fieldOffset + indicatorLength;
-            int stop = fieldOffset + fieldLength - indicatorLength + 1;
-            int position = start;
+            qint32 start = fieldOffset + indicatorLength;
+            const qint32 stop = fieldOffset + fieldLength - indicatorLength + 1;
+            qint32 position = start;
 
             // Ищем значение поля до первого разделителя
             while (position < stop) {
@@ -95,14 +93,12 @@ MarcRecord* Iso2709::readRecord(QIODevice &device, QTextCodec &encoding) {
         }
     }
 
-    if (record) { //-V668
-        delete []record;
-    }
+    delete []record;
 
     return result;
 }
 
-static void encode(char *bytes, int pos, int len, int val) {
+static void encode(QByteArray &bytes, qint32 pos, qint32 len, qint32 val) {
     len--;
     for (pos += len; len >= 0; len--) {
         bytes[pos] = static_cast<char>(val % 10 + '0');
@@ -111,7 +107,7 @@ static void encode(char *bytes, int pos, int len, int val) {
     }
 }
 
-static int encode(char *bytes, int pos, QString str, QTextCodec &encoding) {
+static qint32 encode(QByteArray &bytes, qint32 pos, const QString &str, QTextCodec &encoding) {
     if (!str.isEmpty()) {
         QByteArray encoded = encoding.fromUnicode(str);
         for (int i = 0; i < encoded.length(); pos++, i++) {
@@ -131,9 +127,9 @@ static int countBytes(const QString &text, QTextCodec &encoding) {
 }
 
 void Iso2709::writeRecord(QIODevice &device, const MarcRecord &record, QTextCodec &encoding) {
-    int recordLength = MarkerLength;
-    int dictionaryLength = 1; // с учетом ограничителя справочника
-    int *fieldLength = new int[static_cast<unsigned int>(record.fields.size())]; // Длины полей
+    qint32 recordLength = MarkerLength;
+    qint32 dictionaryLength = 1; // с учетом ограничителя справочника
+    QVector<qint32> fieldLength(record.fields.size());
 
     // Сначала подсчитываем общую длину
     for (int i = 0; i < record.fields.size(); i++) {
@@ -141,11 +137,10 @@ void Iso2709::writeRecord(QIODevice &device, const MarcRecord &record, QTextCode
         const RecordField &field = record.fields[i];
 
         if ((field.tag <= 0) || (field.tag >= 1000)) {
-            delete []fieldLength;
             throw IrbisException();
         }
 
-        int fldlen = 0;
+        qint32 fldlen = 0;
         if (field.tag < 10) {
             // В фиксированном поле не бывает подполей и индикаторов
             fldlen += countBytes(field.value, encoding);
@@ -156,7 +151,6 @@ void Iso2709::writeRecord(QIODevice &device, const MarcRecord &record, QTextCode
                 const SubField &subfield = field.subfields[j];
 
                 if ((subfield.code) <= ' ' || (subfield.code >= 127)) {
-                    delete []fieldLength;
                     throw IrbisException();
                 }
 
@@ -168,7 +162,6 @@ void Iso2709::writeRecord(QIODevice &device, const MarcRecord &record, QTextCode
         fldlen++; // разделитель полей
 
         if (fldlen >= 10000) {
-            delete []fieldLength;
             throw IrbisException();
         }
 
@@ -180,32 +173,30 @@ void Iso2709::writeRecord(QIODevice &device, const MarcRecord &record, QTextCode
     recordLength++; // разделитель записей
 
     if (recordLength >= 100000) {
-        delete []fieldLength;
         throw IrbisException();
     }
 
     // Приступаем к кодированию
-    int dictionaryPosition = MarkerLength;
-    int baseAddress = MarkerLength + dictionaryLength;
-    int currentAddress = baseAddress;
-    char *bytes = new char[static_cast<unsigned int>(recordLength)]; // Закодированная запись
+    qint32 dictionaryPosition = MarkerLength;
+    const qint32 baseAddress = MarkerLength + dictionaryLength;
+    qint32 currentAddress = baseAddress;
+    QByteArray bytes(recordLength, ' ');
 
     // Маркер записи
-    memset(bytes, ' ', static_cast<unsigned int>(recordLength));
-    encode(bytes, 0, 5, recordLength);
+    encode(bytes,  0, 5, recordLength);
     encode(bytes, 12, 5, baseAddress);
-    bytes[5] = 'n';  // Record status
-    bytes[6] = 'a';  // Record type
-    bytes[7] = 'm';  // Bibligraphical index
-    bytes[8] = '2';
-    bytes[10] = '2';
-    bytes[11] = '2';
-    bytes[17] = ' '; // Bibliographical level
-    bytes[18] = 'i'; // Cataloging rules
-    bytes[19] = ' '; // Related record
-    bytes[20] = '4'; // Field length
-    bytes[21] = '5'; // Field offset
-    bytes[22] = '0';
+    bytes[5]  = 'n'; // Record status //-V557
+    bytes[6]  = 'a'; // Record type //-V557
+    bytes[7]  = 'm'; // Bibligraphical index //-V557
+    bytes[8]  = '2'; //-V557
+    bytes[10] = '2'; //-V557
+    bytes[11] = '2'; //-V557
+    bytes[17] = ' '; // Bibliographical level //-V557
+    bytes[18] = 'i'; // Cataloging rules //-V557
+    bytes[19] = ' '; // Related record //-V557
+    bytes[20] = '4'; // Field length //-V557
+    bytes[21] = '5'; // Field offset //-V557
+    bytes[22] = '0'; //-V557
 
     // Конец справочника
     bytes[baseAddress - 1] = FieldDelimiter;
@@ -245,13 +236,11 @@ void Iso2709::writeRecord(QIODevice &device, const MarcRecord &record, QTextCode
         bytes[currentAddress++] = FieldDelimiter;
     }
 
-    // assert currentAddress == recordLength - 1;
+    Q_ASSERT(currentAddress == recordLength - 1);
 
     // Конец записи
     bytes[recordLength - 1] = RecordDelimiter;
 
     // Собственно запись в поток
-    device.write(bytes, recordLength);
-    delete []bytes;
-    delete []fieldLength;
+    device.write(bytes);
 }
