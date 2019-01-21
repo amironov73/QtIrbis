@@ -39,6 +39,10 @@ SOURCES += QtIrbis.cpp \
     TextNavigator.cpp \
     ProtocolText.cpp \
     IrbisDate.cpp \
-    Iso2709.cpp
+    Iso2709.cpp \
+    IrbisException.cpp \
+    IrbisTreeFile.cpp \
+    IrbisTreeNode.cpp \
+    StopWords.cpp
 
 HEADERS += QtIrbis.h

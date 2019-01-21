@@ -3,6 +3,8 @@
 
 #include "QtIrbis.h"
 
+using irbis::fastParse32;
+
 //=========================================================
 
 const QChar EmbeddedField::DefaultCode = '1';

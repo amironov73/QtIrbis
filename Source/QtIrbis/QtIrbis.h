@@ -31,6 +31,8 @@ class IrbisException;
 class IrbisFormat;
 class IrbisProcessInfo;
 class IrbisText;
+class IrbisTreeFile;
+class IrbisTreeNode;
 class IrbisVersion;
 class Iso2709;
 class MarcRecord;
@@ -45,6 +47,7 @@ class SearchScenario;
 class ServerStat;
 class ServerResponse;
 class SubField;
+class StopWords;
 class TableDefinition;
 class TermInfo;
 class TermParameters;
@@ -409,9 +412,12 @@ class QTIRBIS_EXPORT IrbisException
 {
 public:
     qint32 code;
+    QString message;
 
-    IrbisException() : code(0) {}
-    IrbisException(qint32 c) : code(c) {}
+    IrbisException(qint32 c = 0);
+    IrbisException(const QString &message);
+
+    static QString getErrorDescription(qint32 code);
 };
 
 //=========================================================
@@ -419,8 +425,8 @@ public:
 class QTIRBIS_EXPORT IrbisFormat
 {
 public:
-    static QString removeComments(QString text);
-    static QString prepareFormat(QString text);
+    static QString removeComments(const QString &text);
+    static QString prepareFormat(const QString &text);
 };
 
 //=========================================================
@@ -478,6 +484,35 @@ public:
     static QString readAllUtf(const QString &filename);
     static QStringList readAnsiLines(const QString &filename);
     static QStringList readUtfLines(const QString &filename);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IrbisTreeFile
+{
+public:
+   static const QChar Indent;
+
+    QList<IrbisTreeNode> roots;
+
+    IrbisTreeFile();
+
+    void write(std::ostream &stream) const;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IrbisTreeNode
+{
+public:
+    QList<IrbisTreeNode> children;
+    QString value;
+    qint32 level;
+
+    IrbisTreeNode(const QString &value="");
+
+    IrbisTreeNode& add(const QString name);
+    void write(std::ostream &stream, qint32 level);
 };
 
 //=========================================================
@@ -628,9 +663,7 @@ public:
     QString value;
     QList<SubField> subfields;
 
-    RecordField() : tag(0), value(), subfields() {}
-    RecordField(qint32 tag);
-    RecordField(qint32 tag, const QString &value);
+    RecordField(qint32 tag = 0, const QString &value = "");
     RecordField(const RecordField &other);
 
     bool isEmpty() const;
@@ -724,8 +757,8 @@ public:
     int returnCode;
 
     ServerResponse(QTcpSocket *socket);
-    ServerResponse(const ServerResponse &other);
-    ServerResponse& operator= (const ServerResponse &other);
+    ServerResponse(const ServerResponse &other) = default;
+    ServerResponse& operator= (const ServerResponse &other) = default;
     ~ServerResponse();
 
     void checkReturnCode();
@@ -761,15 +794,26 @@ public:
 
 //=========================================================
 
+class QTIRBIS_EXPORT StopWords
+{
+public:
+    QSet<QString> mapping;
+
+    StopWords();
+
+    bool isStopWord(const QString &word) const;
+    void parse(const QString &fileName);
+};
+
+//=========================================================
+
 class QTIRBIS_EXPORT SubField
 {
 public:
     QChar code;
     QString value;
 
-    SubField() : code('\0'), value() {}
-    SubField(QChar code);
-    SubField(QChar code, QString value);
+    SubField(QChar code = '\0', QString value = "");
     SubField(const SubField &other);
 
     bool isEmpty() const;
@@ -882,6 +926,9 @@ public:
 
 // Utilities
 
+namespace irbis
+{
+
 bool sameChar(QChar first, QChar second);
 bool sameString(const QString &first, const QString &second);
 
@@ -898,6 +945,8 @@ QString itemAt(const QStringList &list, qint32 index);
 
 QStringList maxSplit(const QString &text, QChar separator, qint32 count);
 QStringList split(const QString &text, const QChar *separators);
+
+}
 
 //=========================================================
 

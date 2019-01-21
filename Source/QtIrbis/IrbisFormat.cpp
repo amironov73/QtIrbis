@@ -5,7 +5,7 @@
 
 //=========================================================
 
-QString IrbisFormat::removeComments(QString text) {
+QString IrbisFormat::removeComments(const QString &text) {
     if (text.isEmpty()) {
         return text;
     }
@@ -64,23 +64,23 @@ QString IrbisFormat::removeComments(QString text) {
     return result;
 }
 
-QString IrbisFormat::prepareFormat(QString text) {
-    text = removeComments(text);
-    int length = text.length();
+QString IrbisFormat::prepareFormat(const QString &text) {
+    QString text2 = removeComments(text);
+    int length = text2.length();
     if (length == 0) {
-        return text;
+        return text2;
     }
 
     bool flag = false;
     for (int i = 0; i  < length; i++) {
-        if (text[i] < ' ') {
+        if (text2[i] < ' ') {
             flag = true;
             break;
         }
     }
 
     if (!flag) {
-        return text;
+        return text2;
     }
 
     QString result;

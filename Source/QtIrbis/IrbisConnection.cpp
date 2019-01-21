@@ -3,6 +3,11 @@
 
 #include "QtIrbis.h"
 
+using irbis::fastParse32;
+using irbis::fastToString;
+using irbis::iif;
+using irbis::maxSplit;
+
 //=========================================================
 
 const QString IrbisConnection::AdministratorDatabaseList = "dbnam1.mnu";

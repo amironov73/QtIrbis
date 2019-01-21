@@ -3,6 +3,9 @@
 
 #include "QtIrbis.h"
 
+using irbis::itemAt;
+using irbis::sameString;
+
 //=========================================================
 
 UserInfo::UserInfo()

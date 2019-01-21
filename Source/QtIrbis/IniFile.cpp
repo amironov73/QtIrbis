@@ -3,6 +3,10 @@
 
 #include "QtIrbis.h"
 
+using irbis::itemAt;
+using irbis::maxSplit;
+using irbis::sameString;
+
 //=========================================================
 
 IniLine::IniLine(const QString &key, const QString &value)

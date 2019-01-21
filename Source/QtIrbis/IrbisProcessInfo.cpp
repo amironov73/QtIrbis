@@ -3,6 +3,8 @@
 
 #include "QtIrbis.h"
 
+using irbis::itemAt;
+
 //=========================================================
 
 IrbisProcessInfo::IrbisProcessInfo()

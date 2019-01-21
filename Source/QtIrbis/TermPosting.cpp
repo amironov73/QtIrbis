@@ -3,6 +3,9 @@
 
 #include "QtIrbis.h"
 
+using irbis::fastParse32;
+using irbis::maxSplit;
+
 //=========================================================
 
 QList<TermPosting> TermPosting::parse(ServerResponse &response) {

@@ -3,6 +3,9 @@
 
 #include "QtIrbis.h"
 
+using irbis::sameString;
+using irbis::split;
+
 //=========================================================
 
 const QString MenuFile::StopMarker = "*****";

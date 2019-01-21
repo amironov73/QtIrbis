@@ -3,6 +3,8 @@
 
 #include "QtIrbis.h"
 
+using irbis::fastParse32;
+
 //=========================================================
 
 // Преамбула двоичного файла
@@ -26,33 +28,6 @@ ServerResponse::ServerResponse(QTcpSocket *socket) {
     for (int i = 0; i < 7; i++) {
         readAnsi();
     }
-}
-
-ServerResponse::ServerResponse(const ServerResponse &other) {
-    socket = other.socket;
-    data = other.data;
-    length = other.length;
-    position = other.position;
-    closed = other.closed;
-    savedSymbol = other.savedSymbol;
-    command = other.command;
-    clientId = other.clientId;
-    queryId = other.queryId;
-    returnCode = other.returnCode;
-}
-
-ServerResponse& ServerResponse::operator= (const ServerResponse &other) {
-    socket = other.socket;
-    data = other.data;
-    length = other.length;
-    position = other.position;
-    closed = other.closed;
-    savedSymbol = other.savedSymbol;
-    command = other.command;
-    clientId = other.clientId;
-    queryId = other.queryId;
-
-    return *this;
 }
 
 ServerResponse::~ServerResponse() {

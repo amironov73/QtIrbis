@@ -3,6 +3,9 @@
 
 #include "QtIrbis.h"
 
+using irbis::fastParse32;
+using irbis::itemAt;
+
 //=========================================================
 
 MarcRecord::MarcRecord() : database(), mfn(0), status(0), version(0), fields() {

@@ -3,6 +3,8 @@
 
 #include "QtIrbis.h"
 
+using irbis::fastParse32;
+
 //=========================================================
 
 static const qint32 LengthOfLength = 5;
@@ -16,8 +18,8 @@ MarcRecord* Iso2709::readRecord(QIODevice &device, QTextCodec &encoding) {
     }
 
     // а затем и ее остаток
-    const qint32 recordLength = fastParse32(marker, 5);
-    char *record = new char[recordLength];
+    const qint32 recordLength = fastParse32(marker, LengthOfLength);
+    char *record = new char[static_cast<size_t>(recordLength)];
     const int need = static_cast<int>(recordLength - LengthOfLength);
     if (device.read(record + LengthOfLength, need) != need) {
         delete []record;

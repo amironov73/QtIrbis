@@ -5,6 +5,9 @@
 
 //=========================================================
 
+namespace irbis
+{
+
 bool sameChar(QChar first, QChar second) {
     return first.toUpper() == second.toUpper();
 }
@@ -135,3 +138,6 @@ QStringList split(const QString &text, const QChar *separators) {
 
     return result;
 }
+
+}
+

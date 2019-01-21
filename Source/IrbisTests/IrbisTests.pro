@@ -14,7 +14,9 @@ SOURCES +=  AllTests.cpp \
     IrbisDateTest.cpp \
     IrbisEncodingTest.cpp \
     IrbisFormatTest.cpp \
-    TextNavigatorTest.cpp
+    TextNavigatorTest.cpp \
+    StopWordsTest.cpp \
+    CommonTest.cpp
 
 HEADERS += IrbisTests.h
 

@@ -3,10 +3,10 @@
 
 #include "QtIrbis.h"
 
-//=========================================================
+using irbis::fastParse32;
+using irbis::sameChar;
 
-RecordField::RecordField(qint32 tag) : tag(tag) {
-}
+//=========================================================
 
 RecordField::RecordField(qint32 tag, const QString &value) : tag(tag), value(value) {
 }

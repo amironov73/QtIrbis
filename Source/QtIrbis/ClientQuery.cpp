@@ -3,6 +3,10 @@
 
 #include "QtIrbis.h"
 
+using irbis::fastParse32;
+using irbis::fastToString;
+using irbis::maxSplit;
+
 //=========================================================
 
 ClientQuery::ClientQuery(IrbisConnection *connection, const QString &commandCode)

@@ -3,6 +3,8 @@
 
 #include "QtIrbis.h"
 
+using irbis::maxSplit;
+
 //=========================================================
 
 RawRecord::RawRecord()

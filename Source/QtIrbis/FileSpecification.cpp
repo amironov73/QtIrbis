@@ -3,6 +3,9 @@
 
 #include "QtIrbis.h"
 
+using irbis::fastParse32;
+using irbis::sameString;
+
 //=========================================================
 
 FileSpecification::FileSpecification(): binaryFile(false), path() {

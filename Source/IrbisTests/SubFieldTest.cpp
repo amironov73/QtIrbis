@@ -11,14 +11,14 @@ void SubFieldTest::constructor_1() {
     SubField sf;
     QVERIFY(sf.isEmpty());
     QVERIFY(sf.code.unicode() == 0);
-    QVERIFY(sf.value.isNull());
+    QVERIFY(sf.value.isEmpty());
 }
 
 void SubFieldTest::constructor_2() {
     SubField sf('a');
     QVERIFY(sf.isEmpty());
     QVERIFY(sf.code == 'a');
-    QVERIFY(sf.value.isNull());
+    QVERIFY(sf.value.isEmpty());
     QVERIFY(sf.toString() == "^a");
 }
 

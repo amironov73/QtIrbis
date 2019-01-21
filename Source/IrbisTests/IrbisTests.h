@@ -4,6 +4,14 @@
 #include <QtCore>
 #include <QtTest>
 
+class CommonTest : public QObject
+{
+    Q_OBJECT
+
+public:
+    QDir testData();
+};
+
 class SubFieldTest : public QObject
 {
     Q_OBJECT
@@ -166,6 +174,20 @@ private slots:
     void readTo_2();
     void readUntil_1();
     void remainingText_1();
+
+};
+
+class StopWordsTest : public CommonTest
+{
+    Q_OBJECT
+
+public:
+    StopWordsTest();
+    ~StopWordsTest();
+
+private slots:
+
+    void parse_1();
 
 };
 

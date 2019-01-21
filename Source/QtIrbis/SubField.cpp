@@ -5,9 +5,6 @@
 
 //=========================================================
 
-SubField::SubField(QChar code)  : code(code) {
-}
-
 SubField::SubField(QChar code, QString value) : code(code), value(value) {
 }
 

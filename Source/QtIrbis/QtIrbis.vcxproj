@@ -22,6 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{62A0BB8F-BD6F-4744-8701-2EB465BF21D3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -35,12 +36,12 @@
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
@@ -104,12 +105,20 @@
       <AdditionalIncludeDirectories>C:\Qt\5.11.2\msvc2017_64\include;C:\Qt\5.11.2\msvc2017_64\include\QtCore;C:\Qt\5.11.2\msvc2017_64\include\QtNetwork</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>QTIRBIS_LIBRARY</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>Qt5Core.lib;Qt5Network.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Qt\5.11.2\msvc2017_64\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Qt\5.11.2\msvc2017_64\include;C:\Qt\5.11.2\msvc2017_64\include\QtCore;C:\Qt\5.11.2\msvc2017_64\include\QtNetwork</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>QTIRBIS_LIBRARY</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>Qt5Core.lib;Qt5Network.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Qt\5.11.2\msvc2017_64\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ClientInfo.cpp" />
@@ -123,9 +132,12 @@
     <ClCompile Include="IrbisConnection.cpp" />
     <ClCompile Include="IrbisDate.cpp" />
     <ClCompile Include="IrbisEncoding.cpp" />
+    <ClCompile Include="IrbisException.cpp" />
     <ClCompile Include="IrbisFormat.cpp" />
     <ClCompile Include="IrbisProcessInfo.cpp" />
     <ClCompile Include="IrbisText.cpp" />
+    <ClCompile Include="IrbisTreeFile.cpp" />
+    <ClCompile Include="IrbisTreeNode.cpp" />
     <ClCompile Include="IrbisVersion.cpp" />
     <ClCompile Include="Iso2709.cpp" />
     <ClCompile Include="MarcRecord.cpp" />
@@ -140,6 +152,7 @@
     <ClCompile Include="SearchScenario.cpp" />
     <ClCompile Include="ServerResponse.cpp" />
     <ClCompile Include="ServerStat.cpp" />
+    <ClCompile Include="StopWords.cpp" />
     <ClCompile Include="SubField.cpp" />
     <ClCompile Include="TermInfo.cpp" />
     <ClCompile Include="TermParameters.cpp" />
