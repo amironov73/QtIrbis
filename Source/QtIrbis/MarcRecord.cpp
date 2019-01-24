@@ -136,3 +136,39 @@ void MarcRecord::parseSingle(QStringList &lines) {
         fields.append(field);
     }
 }
+
+bool MarcRecord::verify(bool throwOnError) const {
+    bool result = true;
+    for (const RecordField &field : fields) {
+        if (!field.verify(throwOnError)) {
+            result = false;
+        }
+    }
+
+    if (!result && throwOnError) {
+        throw IrbisEncoding();
+    }
+
+    return result;
+}
+
+std::ostream&  operator << (std::ostream &stream, const MarcRecord &record) {
+    stream << record.mfn << '#' << record.status << std::endl;
+    stream << "0#" << record.version << std::endl;
+    for (const RecordField &field : record.fields) {
+        stream << field << std::endl;
+    }
+
+    return stream;
+}
+
+std::wostream& operator << (std::wostream &stream, const MarcRecord &record) {
+    stream << record.mfn << L'#' << record.status << std::endl;
+    stream << L"0#" << record.version << std::endl;
+    for (const RecordField &field : record.fields) {
+        stream << field << std::endl;
+    }
+
+    return stream;
+}
+

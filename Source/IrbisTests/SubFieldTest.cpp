@@ -1,5 +1,6 @@
-#include "QtIrbis.h"
-#include "IrbisTests.h"
+#include "pch.h"
+
+#include <sstream>
 
 SubFieldTest::SubFieldTest() {
 }
@@ -35,5 +36,12 @@ void SubFieldTest::clone_1() {
     SubField second(first);
     QVERIFY(first.code == second.code);
     QVERIFY(first.value == second.value);
+}
+
+void SubFieldTest::stream_1() {
+    SubField subField('a', "Value");
+    std::ostringstream stream;
+    stream << subField;
+    QVERIFY(stream.str() == "^aValue");
 }
 

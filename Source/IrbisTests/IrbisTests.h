@@ -26,7 +26,7 @@ private slots:
     void constructor_2();
     void constructor_3();
     void clone_1();
-
+    void stream_1();
 };
 
 class RecordFieldTest : public QObject
@@ -47,7 +47,7 @@ private slots:
     void getFirstSubField_1();
     void getFirstSubfieldValue_1();
     void getSubField_1();
-
+    void stream_1();
 };
 
 class MarcRecordTest : public QObject
@@ -71,7 +71,7 @@ private slots:
     void fma_2();
     void getFirstField_1();
     void isDeleted_1();
-
+    void stream_1();
 };
 
 class IrbisEncodingTest : public QObject
@@ -189,6 +189,22 @@ private slots:
 
     void parse_1();
 
+};
+
+class NumberTextTest : public QObject
+{
+    Q_OBJECT
+
+public:
+    NumberTextTest();
+    ~NumberTextTest();
+
+private slots:
+
+    void constructor_1();
+    void increment_1();
+    void parse_1();
+    void toString_1();
 };
 
 #endif

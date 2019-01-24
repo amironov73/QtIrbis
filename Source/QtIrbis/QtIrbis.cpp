@@ -18,7 +18,7 @@ bool sameString(const QString &first, const QString &second) {
 
 qint32 fastParse32(const QString &text) {
     qint32 result = 0, length = text.length();
-    for (int offset = 0; offset < length; offset++) {
+    for (qint32 offset = 0; offset < length; offset++) {
         result = result * 10 + text.at(offset).unicode() - '0';
     }
 
@@ -41,6 +41,16 @@ qint32 fastParse32(const char *text, qint32 length) {
         result = result * 10 + *text - '0';
         text++;
         length--;
+    }
+
+    return result;
+}
+
+qint64 fastParse64(const QString &text) {
+    qint64 result = 0;
+    qint32 length = text.length();
+    for (qint32 offset = 0; offset < length; offset++) {
+        result = result * 10 + text.at(offset).unicode() - '0';
     }
 
     return result;
@@ -137,6 +147,10 @@ QStringList split(const QString &text, const QChar *separators) {
     }
 
     return result;
+}
+
+qint32 sign(qint64 val) {
+    return val == 0 ? 0 : val < 0 ? -1 : 1;
 }
 
 }

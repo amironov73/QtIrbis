@@ -1,5 +1,4 @@
-#include "QtIrbis.h"
-#include "IrbisTests.h"
+#include "pch.h"
 
 QDir CommonTest::testData() {
     QDir candidate = QDir::current();

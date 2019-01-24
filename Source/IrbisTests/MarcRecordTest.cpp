@@ -1,5 +1,6 @@
-#include "QtIrbis.h"
-#include "IrbisTests.h"
+#include "pch.h"
+
+#include <sstream>
 
 MarcRecordTest::MarcRecordTest() {
 }
@@ -121,5 +122,22 @@ void MarcRecordTest::isDeleted_1() {
     QVERIFY(record.isDeleted());
     record.status = RecordStatus::PhysicallyDeleted;
     QVERIFY(record.isDeleted());
+}
+
+
+void MarcRecordTest::stream_1() {
+    MarcRecord record;
+    record.mfn = 123;
+    record.status = RecordStatus::Last;
+    record.version = 321;
+    RecordField field100(100);
+    field100.add('a', "SubA").add('b', "SubB");
+    record.fields.append(field100);
+    RecordField field200(200);
+    field200.add('c', "SubC").add('d', "SubD");
+    record.fields.append(field200);
+    std::ostringstream stream;
+    stream << record;
+    QVERIFY(stream.str() == "123#32\n0#321\n100#^aSubA^bSubB\n200#^cSubC^dSubD\n");
 }
 

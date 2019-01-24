@@ -143,6 +143,8 @@
     <ClCompile Include="MarcRecord.cpp" />
     <ClCompile Include="MenuEntry.cpp" />
     <ClCompile Include="MenuFile.cpp" />
+    <ClCompile Include="NumberChunk.cpp" />
+    <ClCompile Include="NumberText.cpp" />
     <ClCompile Include="PostingParameters.cpp" />
     <ClCompile Include="ProtocolText.cpp" />
     <ClCompile Include="QtIrbis.cpp" />

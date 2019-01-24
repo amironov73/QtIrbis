@@ -18,3 +18,24 @@ bool SubField::isEmpty() const {
 QString SubField::toString() const {
     return QString("^%1%2").arg(code).arg(value);
 }
+
+bool SubField::verify(bool throwOnError) const {
+    bool result = !code.isNull() && !value.isEmpty();
+    if (!result && throwOnError) {
+        throw IrbisException();
+    }
+
+    return result;
+}
+
+std::ostream& operator << (std::ostream &stream, const SubField &subField) {
+    stream << '^' << subField.code.toLatin1() << subField.value.toStdString();
+
+    return stream;
+}
+
+std::wostream& operator << (std::wostream &stream, const SubField &subField) {
+    stream << L'^' << subField.code.toLatin1() << subField.value.toStdWString();
+
+    return stream;
+}

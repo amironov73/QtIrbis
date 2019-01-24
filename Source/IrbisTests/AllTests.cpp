@@ -1,4 +1,4 @@
-#include "IrbisTests.h"
+#include "pch.h"
 
 // Note: This is equivalent to QTEST_APPLESS_MAIN for multiple test classes.
 int main(int argc, char** argv)
@@ -52,6 +52,11 @@ int main(int argc, char** argv)
 
    {
       StopWordsTest tmp;
+      status |= QTest::qExec(&tmp, argc, argv);
+   }
+
+   {
+      NumberTextTest tmp;
       status |= QTest::qExec(&tmp, argc, argv);
    }
 

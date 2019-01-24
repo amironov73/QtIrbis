@@ -16,9 +16,12 @@ SOURCES +=  AllTests.cpp \
     IrbisFormatTest.cpp \
     TextNavigatorTest.cpp \
     StopWordsTest.cpp \
-    CommonTest.cpp
+    CommonTest.cpp \
+    NumberTextTest.cpp
 
 HEADERS += IrbisTests.h
+
+PRECOMPILED_HEADER = pch.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../QtIrbis/release/ -lQtIrbis
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../QtIrbis/debug/ -lQtIrbis

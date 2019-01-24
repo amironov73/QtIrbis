@@ -1,5 +1,4 @@
-#include "QtIrbis.h"
-#include "IrbisTests.h"
+#include "pch.h"
 
 IrbisEncodingTest::IrbisEncodingTest() {
 }

@@ -43,6 +43,10 @@ SOURCES += QtIrbis.cpp \
     IrbisException.cpp \
     IrbisTreeFile.cpp \
     IrbisTreeNode.cpp \
-    StopWords.cpp
+    StopWords.cpp \
+    NumberChunk.cpp \
+    NumberText.cpp
 
 HEADERS += QtIrbis.h
+
+PRECOMPILED_HEADER = QtIrbis.h

@@ -1,6 +1,8 @@
 ﻿#ifndef QTIRBIS_H
 #define QTIRBIS_H
 
+#include <iostream>
+
 #include <QtCore>
 #include <QtNetwork>
 
@@ -38,6 +40,8 @@ class Iso2709;
 class MarcRecord;
 class MenuEntry;
 class MenuFile;
+class NumberChunk;
+class NumberText;
 class PostingParameters;
 class ProtocolText;
 class RawRecord;
@@ -571,8 +575,11 @@ public:
     RecordField *getFirstField(qint32 tag) const;
     bool isDeleted() const;
     void parseSingle(QStringList &lines);
-
     QString toString() const;
+    bool verify(bool throwOnError) const;
+
+    friend QTIRBIS_EXPORT std::ostream&  operator << (std::ostream &stream, const MarcRecord &record);
+    friend QTIRBIS_EXPORT std::wostream& operator << (std::wostream &stream, const MarcRecord &record);
 };
 
 //=========================================================
@@ -608,6 +615,48 @@ public:
     const QString& getValueSensitive(const QString &code, const QString &defaultValue) const;
     static MenuFile parse(QTextStream &stream);
     static MenuFile parseLocalFile(const QString &filename, const QTextCodec *encoding);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT NumberChunk {
+public:
+    QString prefix;
+    qint64 value;
+    qint32 length;
+    bool haveValue;
+
+    NumberChunk();
+    NumberChunk(const NumberChunk &other) = default;
+
+    qint32 compareTo(const NumberChunk &other) const;
+    bool havePrefix() const;
+    bool setUp(const QString &str, const QString &number);
+    QString toString() const;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT NumberText {
+private:
+    QLinkedList<NumberChunk> _chunks;
+    NumberChunk* at(int index) const;
+    NumberChunk* lastChunk() const;
+
+public:
+
+    NumberText();
+    NumberText(const NumberText &other);
+    NumberText(const QString &text);
+
+    NumberText& append(const QString &prefix = "", bool haveValue = true, qint64 value = 0, qint32 length = 0);
+    QString getPrefix(int index) const;
+    qint64 getValue(int index) const;
+    NumberText& increment(int delta = 1);
+    NumberText& increment(int index, int delta = 1);
+    NumberText& parse(const QString &text);
+    qint32 size() const;
+    QString toString() const;
 };
 
 //=========================================================
@@ -673,10 +722,12 @@ public:
     SubField* getFirstSubField(QChar code) const;
     QString getFirstSubFieldValue(QChar code) const;
     QList<SubField> getSubField(QChar code) const;
-
     static RecordField parse(const QString &line);
-
     QString toString() const;
+    bool verify(bool throwOnError) const;
+
+    friend QTIRBIS_EXPORT std::ostream&  operator << (std::ostream &stream, const RecordField &field);
+    friend QTIRBIS_EXPORT std::wostream& operator << (std::wostream &stream, const RecordField &field);
 };
 
 //=========================================================
@@ -818,6 +869,10 @@ public:
 
     bool isEmpty() const;
     QString toString() const;
+    bool verify(bool throwOnError) const;
+
+    friend QTIRBIS_EXPORT std::ostream& operator << (std::ostream &stream, const SubField &subField);
+    friend QTIRBIS_EXPORT std::wostream& operator << (std::wostream &stream, const SubField &subField);
 };
 
 //=========================================================
@@ -935,6 +990,7 @@ bool sameString(const QString &first, const QString &second);
 qint32 fastParse32(const QString &text);
 qint32 fastParse32(const char *text);
 qint32 fastParse32(const char *text, qint32 length);
+qint64 fastParse64(const QString &text);
 
 QString fastToString(qint32 value);
 
@@ -945,6 +1001,8 @@ QString itemAt(const QStringList &list, qint32 index);
 
 QStringList maxSplit(const QString &text, QChar separator, qint32 count);
 QStringList split(const QString &text, const QChar *separators);
+
+qint32 sign(qint64 val);
 
 }
 

@@ -82,10 +82,53 @@ RecordField RecordField::parse(const QString &line) {
 }
 
 QString RecordField::toString() const {
-    QString result = QString("%1%2").arg(tag).arg(value);
+    QString result = QString("%1#%2").arg(tag).arg(value);
     for (auto item : subfields) {
         result.append(item.toString());
     }
 
     return result;
 }
+
+bool RecordField::verify(bool throwOnError) const {
+    bool result = tag > 0;
+
+    if (result) {
+        if (subfields.isEmpty()) {
+            result = !value.isEmpty();
+        }
+        else {
+            for (const auto &sub : subfields) {
+                if (!sub.verify(throwOnError)) {
+                    result = false;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!result && throwOnError) {
+        throw IrbisException();
+    }
+
+    return result;
+}
+
+std::ostream& operator << (std::ostream &stream, const RecordField &field) {
+    stream << field.tag << '#' << field.value.toStdString();
+    for (const auto &subField : field.subfields) {
+        stream << subField;
+    }
+
+    return stream;
+}
+
+std::wostream& operator << (std::wostream &stream, const RecordField &field) {
+    stream << field.tag << L'#' << field.value.toStdWString();
+    for (const auto &subField : field.subfields) {
+        stream << subField;
+    }
+
+    return stream;
+}
+

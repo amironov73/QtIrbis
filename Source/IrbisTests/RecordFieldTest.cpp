@@ -1,5 +1,6 @@
-#include "QtIrbis.h"
-#include "IrbisTests.h"
+#include "pch.h"
+
+#include <sstream>
 
 RecordFieldTest::RecordFieldTest() {
 }
@@ -63,4 +64,12 @@ void RecordFieldTest::getSubField_1() {
     QVERIFY(field.getSubField('a').size() == 1);
     QVERIFY(field.getSubField('b').size() == 1);
     QVERIFY(field.getSubField('c').size() == 0);
+}
+
+void RecordFieldTest::stream_1() {
+    RecordField field(100);
+    field.add('a', "SubfieldA").add('b', "SubfieldB");
+    std::ostringstream stream;
+    stream << field;
+    QVERIFY(stream.str() == "100#^aSubfieldA^bSubfieldB");
 }
