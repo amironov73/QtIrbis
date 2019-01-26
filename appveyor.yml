@@ -9,7 +9,7 @@ build_script:
   - compile.bat
 
 artifacts:
-  - path: Source\QtIrbis\release
+  - path: Binaries
     name: Binaries
   - path: Source\IrbisTests\release
     name: Tests
