@@ -1,4 +1,7 @@
+CONFIG += c++14
+
 QT += network xml
+QT -= gui widgets
 
 TARGET = QtIrbis
 

@@ -1,4 +1,7 @@
-QT += network widgets testlib
+CONFIG += c++14
+
+QT += network testlib
+QT -= gui widgets
 
 CONFIG += qt console warn_on depend_includepath testcase
 CONFIG -= app_bundle
@@ -25,6 +28,8 @@ PRECOMPILED_HEADER = pch.h
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../QtIrbis/release/ -lQtIrbis
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../QtIrbis/debug/ -lQtIrbis
+else:unix:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../QtIrbis/ -lQtIrbis
+else:unix:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../QtIrbis/ -lQtIrbis
 
 INCLUDEPATH += $$PWD/../QtIrbis
 DEPENDPATH += $$PWD/../QtIrbis

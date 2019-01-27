@@ -3,7 +3,8 @@
 ManagedClient ported to Qt 5. Currently supported:
 
 * C++14;
-* 64-bit Windows;
+* 32- and 64-bit Windows;
+* Xenial Ubuntu release;
 * MSVS 2017 Community Edition;
 * Qt 5.11.
 
@@ -18,3 +19,4 @@ ManagedClient ported to Qt 5. Currently supported:
 
 [![Issues](https://img.shields.io/github/issues/amironov73/QtIrbis.svg)](https://github.com/amironov73/ManagedIrbis/issues)
 [![Build status](https://img.shields.io/appveyor/ci/AlexeyMironov/qtirbis.svg)](https://ci.appveyor.com/project/AlexeyMironov/qtirbis/)
+[![Build status](https://api.travis-ci.org/amironov73/QtIrbis.svg)](https://travis-ci.org/amironov73/QtIrbis/)

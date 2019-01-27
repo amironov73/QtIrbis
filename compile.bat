@@ -51,13 +51,14 @@ rem Copy DLL
 rem -------------------------------------------------------
 
 copy /b Source\QtIrbis\release\*.dll Source\IrbisTests\release
-del Source\QtIrbis\release\*.obj > nul 2> nul
-del Source\QtIrbis\release\*.pch > nul 2> nul
+del Source\QtIrbis\release\*.obj    > nul 2> nul
+del Source\QtIrbis\release\*.pch    > nul 2> nul
+del Source\IrbisTests\release\*.pch > nul 2> nul
 
 windeployqt -no-translations -no-compiler-runtime Source\QtIrbis\release\QtIrbis.dll
 windeployqt -no-translations -no-compiler-runtime Source\IrbisTests\release\IrbisTests.exe
 
-rmdir /s /q Source\QtIrbis\release\bearer > nul
+rmdir /s /q Source\QtIrbis\release\bearer > nul 2> nul
 
 rem -------------------------------------------------------
 rem Run tests
@@ -65,7 +66,7 @@ rem -------------------------------------------------------
 
 Source\IrbisTests\release\IrbisTests.exe
 
-copy Source\QtIrbis\release\*.* Binaries\%3 > nul
+copy Source\QtIrbis\release\*.* Binaries\%3 > nul 2> nul
 
 EndLocal
 
