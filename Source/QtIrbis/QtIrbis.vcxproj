@@ -150,6 +150,7 @@
     <ClCompile Include="QtIrbis.cpp" />
     <ClCompile Include="RawRecord.cpp" />
     <ClCompile Include="RecordField.cpp" />
+    <ClCompile Include="RecordSerializer.cpp" />
     <ClCompile Include="SearchParameters.cpp" />
     <ClCompile Include="SearchScenario.cpp" />
     <ClCompile Include="ServerResponse.cpp" />

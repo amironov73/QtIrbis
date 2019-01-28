@@ -20,7 +20,8 @@ SOURCES +=  AllTests.cpp \
     TextNavigatorTest.cpp \
     StopWordsTest.cpp \
     CommonTest.cpp \
-    NumberTextTest.cpp
+    NumberTextTest.cpp \
+    RecordSerializerTest.cpp
 
 HEADERS += IrbisTests.h
 

@@ -46,6 +46,7 @@ class PostingParameters;
 class ProtocolText;
 class RawRecord;
 class RecordField;
+class RecordSerializer;
 class SearchParameters;
 class SearchScenario;
 class ServerStat;
@@ -406,6 +407,10 @@ private:
 
 public:
     static QTextCodec* ansi();
+    static QString fromAnsi(const QByteArray &bytes);
+    static QString fromUtf(const QByteArray &bytes);
+    static QByteArray toAnsi(const QString &text);
+    static QByteArray toUtf(const QString &text);
     static QTextCodec* utf();
 };
 
@@ -732,6 +737,19 @@ public:
 
 //=========================================================
 
+class QTIRBIS_EXPORT RecordSerializer {
+private:
+    QDataStream &stream;
+
+public:
+    RecordSerializer(QDataStream &stream);
+
+    MarcRecord deserialize();
+    void serialize(const MarcRecord &record);
+};
+
+//=========================================================
+
 enum RecordStatus
 {
     LogicallyDeleted = 1,
@@ -984,25 +1002,27 @@ public:
 namespace irbis
 {
 
-bool sameChar(QChar first, QChar second);
-bool sameString(const QString &first, const QString &second);
+bool QTIRBIS_EXPORT sameChar(QChar first, QChar second);
+bool QTIRBIS_EXPORT sameString(const QString &first, const QString &second);
 
-qint32 fastParse32(const QString &text);
-qint32 fastParse32(const char *text);
-qint32 fastParse32(const char *text, qint32 length);
-qint64 fastParse64(const QString &text);
+qint32 QTIRBIS_EXPORT fastParse32(const QString &text);
+qint32 QTIRBIS_EXPORT fastParse32(const char *text);
+qint32 QTIRBIS_EXPORT fastParse32(const char *text, qint32 length);
+qint64 QTIRBIS_EXPORT fastParse64(const QString &text);
 
-QString fastToString(qint32 value);
+QString QTIRBIS_EXPORT fastToString(qint32 value);
 
-const QString& iif(const QString &s1, const QString &s2);
-const QString& iif(const QString &s1, const QString &s2, const QString &s3);
+const QString QTIRBIS_EXPORT & iif(const QString &s1, const QString &s2);
+const QString QTIRBIS_EXPORT & iif(const QString &s1, const QString &s2, const QString &s3);
 
-QString itemAt(const QStringList &list, qint32 index);
+QString QTIRBIS_EXPORT itemAt(const QStringList &list, qint32 index);
 
-QStringList maxSplit(const QString &text, QChar separator, qint32 count);
-QStringList split(const QString &text, const QChar *separators);
+QStringList QTIRBIS_EXPORT maxSplit(const QString &text, QChar separator, qint32 count);
+QStringList QTIRBIS_EXPORT split(const QString &text, const QChar *separators);
 
-qint32 sign(qint64 val);
+qint32 QTIRBIS_EXPORT sign(qint64 val);
+
+QString QTIRBIS_EXPORT toDebug(const QByteArray &array);
 
 }
 

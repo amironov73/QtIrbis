@@ -16,6 +16,22 @@ QTextCodec* IrbisEncoding::ansi() {
     return _ansi;
 }
 
+QString IrbisEncoding::fromAnsi(const QByteArray &bytes) {
+    return ansi()->toUnicode(bytes);
+}
+
+QString IrbisEncoding::fromUtf(const QByteArray &bytes) {
+    return utf()->toUnicode(bytes);
+}
+
+QByteArray IrbisEncoding::toAnsi(const QString &text) {
+    return ansi()->fromUnicode(text);
+}
+
+QByteArray IrbisEncoding::toUtf(const QString &text) {
+    return utf()->fromUnicode(text);
+}
+
 QTextCodec* IrbisEncoding::utf() {
     if (!_utf) {
         _utf = QTextCodec::codecForName("UTF-8");
@@ -23,3 +39,4 @@ QTextCodec* IrbisEncoding::utf() {
 
     return _utf;
 }
+

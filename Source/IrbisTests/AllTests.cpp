@@ -60,5 +60,10 @@ int main(int argc, char** argv)
       status |= QTest::qExec(&tmp, argc, argv);
    }
 
+   {
+       RecordSerializerTest tmp;
+       status |= QTest::qExec(&tmp, argc, argv);
+   }
+
    return status;
 }

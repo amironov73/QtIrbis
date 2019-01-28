@@ -207,5 +207,18 @@ private slots:
     void toString_1();
 };
 
+class RecordSerializerTest : public QObject
+{
+    Q_OBJECT
+
+public:
+    RecordSerializerTest();
+    ~RecordSerializerTest();
+
+private slots:
+
+    void roundtrip_1();
+};
+
 #endif
 

@@ -48,7 +48,8 @@ SOURCES += QtIrbis.cpp \
     IrbisTreeNode.cpp \
     StopWords.cpp \
     NumberChunk.cpp \
-    NumberText.cpp
+    NumberText.cpp \
+    RecordSerializer.cpp
 
 HEADERS += QtIrbis.h
 

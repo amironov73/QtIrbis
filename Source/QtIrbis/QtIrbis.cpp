@@ -153,5 +153,22 @@ qint32 sign(qint64 val) {
     return val == 0 ? 0 : val < 0 ? -1 : 1;
 }
 
+QString toDebug(const QByteArray &array) {
+
+    QString result;
+    QChar c;
+
+    for ( int i=0 ; i < array.size() ; i++ ){
+        c = array[i];
+        if (c >= 0x20 && c <= 126) {
+            result.append(c);
+        } else {
+            result.append(QString("<%1>").arg(c.unicode(), 2, 16, QChar('0')));
+        }
+    }
+
+    return result;
+}
+
 }
 
