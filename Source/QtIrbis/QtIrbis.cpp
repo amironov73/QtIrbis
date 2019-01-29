@@ -185,5 +185,14 @@ QString QTIRBIS_EXPORT readString(QDataStream &stream, qint32 required, QTextCod
     return result;
 }
 
+qint64 QTIRBIS_EXPORT read64bit(QDataStream &stream) {
+    quint32 low, high;
+    stream >> low >> high;
+    qint64 result = static_cast<qint64>((static_cast<quint64>(high) << 32) | low);
+
+    return result;
+
+}
+
 }
 

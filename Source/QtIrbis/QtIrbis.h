@@ -64,6 +64,8 @@ class TermParameters;
 class TermPosting;
 class TextNavigator;
 class UserInfo;
+class XrfFile64;
+class XrfRecord64;
 
 //=========================================================
 
@@ -1096,6 +1098,44 @@ public:
 
 //=========================================================
 
+class QTIRBIS_EXPORT XrfFile64
+{
+private:
+    QString _fileName;
+    QFile _file;
+    QDataStream _stream;
+    QMutex _mutex;
+
+    qint64 _getOffset(qint32 mfn);
+
+public:
+
+    XrfFile64(const QString &fileName);
+    XrfFile64(const XrfFile64 &other) = delete;
+    XrfFile64& operator= (const XrfFile64 &other) = delete;
+
+    bool open();
+    XrfRecord64 readRecord(qint32 mfn);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT XrfRecord64
+{
+public:
+    const static qint32 RecordSize;
+
+    qint32 mfn;
+    qint64 offset;
+    qint32 status;
+
+    bool isDeleted() const;
+    bool isLocked() const;
+    QString toString() const;
+};
+
+//=========================================================
+
 // Utilities
 
 namespace irbis
@@ -1124,6 +1164,8 @@ qint32 QTIRBIS_EXPORT sign(qint64 val);
 QString QTIRBIS_EXPORT toDebug(const QByteArray &array);
 
 QString QTIRBIS_EXPORT readString(QDataStream &stream, qint32 required, QTextCodec *codec);
+
+qint64 QTIRBIS_EXPORT read64bit(QDataStream &stream);
 
 }
 

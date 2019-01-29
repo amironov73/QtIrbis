@@ -10,6 +10,10 @@ class CommonTest : public QObject
 
 public:
     QDir testData();
+    QDir irbis64root();
+    QDir irbis64datai();
+    QDir irbis64ibis();
+    QDir irbis64deposit();
 };
 
 class SubFieldTest : public QObject
@@ -257,6 +261,19 @@ public:
 private slots:
 
     void readLocalFile_1();
+};
+
+class XrfFile64Test : public CommonTest
+{
+    Q_OBJECT
+
+public:
+    XrfFile64Test();
+    ~XrfFile64Test();
+
+private slots:
+
+    void readRecord_1();
 };
 
 #endif

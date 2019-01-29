@@ -80,5 +80,10 @@ int main(int argc, char** argv)
        status |= QTest::qExec(&tmp, argc, argv);
    }
 
+   {
+       XrfFile64Test tmp;
+       status |= QTest::qExec(&tmp, argc, argv);
+   }
+
    return status;
 }

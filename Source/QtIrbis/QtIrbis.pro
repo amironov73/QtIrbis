@@ -54,7 +54,9 @@ SOURCES += QtIrbis.cpp \
     IlfEntry.cpp \
     IlfFile.cpp \
     ChunkedBuffer.cpp \
-    MemoryChunk.cpp
+    MemoryChunk.cpp \
+    XrfRecord64.cpp \
+    XrfFile64.cpp
 
 HEADERS += QtIrbis.h
 
