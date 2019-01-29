@@ -6,7 +6,7 @@
 //=========================================================
 
 IrbisTreeNode::IrbisTreeNode(const QString &value)
-    : level(0), children(), value(value) {
+    : children(), value(value), level(0) {
 }
 
 IrbisTreeNode& IrbisTreeNode::add(const QString name) {

@@ -302,7 +302,7 @@ public:
 
     IlfFile();
 
-    void ReadLocalFile(const QString &fileName);
+    void readLocalFile(const QString &fileName);
 };
 
 //=========================================================
@@ -589,6 +589,8 @@ public:
 
     IrbisTreeFile();
 
+    void parse(QTextStream &stream);
+    void readLocalFile(const QString &fileName, QTextCodec *encoding);
     void write(std::ostream &stream) const;
 };
 

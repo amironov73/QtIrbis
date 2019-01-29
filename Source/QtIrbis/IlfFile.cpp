@@ -16,7 +16,7 @@ IlfFile::IlfFile()
       writeCount(0), deleteCount(0) {
 }
 
-void IlfFile::ReadLocalFile(const QString &fileName) {
+void IlfFile::readLocalFile(const QString &fileName) {
     QTextCodec *ansi = IrbisEncoding::ansi();
     entries.clear();
     QFile file(fileName);

@@ -6,6 +6,6 @@
 //=========================================================
 
 PostingParameters::PostingParameters()
-    : database(), firstPosting(1), format(), numberOfPostings(0),
-    term(), listOfTerms() {
+    : listOfTerms(), database(), format(), term(), firstPosting(1),
+      numberOfPostings(0) {
 }

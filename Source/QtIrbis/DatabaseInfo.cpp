@@ -8,9 +8,10 @@ using irbis::fastParse32;
 //=========================================================
 
 DatabaseInfo::DatabaseInfo()
-    : name(), description(), maxMfn(0), logicallyDeletedRecords(),
-    physicallyDeletedRecords(), nonActualizedRecords(), lockedRecords(),
-    databaseLocked(false), readOnly(false) {
+    : logicallyDeletedRecords(), physicallyDeletedRecords(),
+      nonActualizedRecords(), lockedRecords(),
+      name(), description(), maxMfn(0),
+      databaseLocked(false), readOnly(false) {
 }
 
 static QList<int> parseLine(const QString &line) {

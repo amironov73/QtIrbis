@@ -233,5 +233,31 @@ private slots:
     void readLocalFile_1();
 };
 
+class IrbisTreeFileTest : public CommonTest
+{
+    Q_OBJECT
+
+public:
+    IrbisTreeFileTest();
+    ~IrbisTreeFileTest();
+
+private slots:
+
+    void readLocalFile_1();
+};
+
+class Iso2709Test : public CommonTest
+{
+    Q_OBJECT
+
+public:
+    Iso2709Test();
+    ~Iso2709Test();
+
+private slots:
+
+    void readLocalFile_1();
+};
+
 #endif
 

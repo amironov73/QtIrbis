@@ -70,5 +70,15 @@ int main(int argc, char** argv)
        status |= QTest::qExec(&tmp, argc, argv);
    }
 
+   {
+       IrbisTreeFileTest tmp;
+       status |= QTest::qExec(&tmp, argc, argv);
+   }
+
+   {
+       Iso2709Test tmp;
+       status |= QTest::qExec(&tmp, argc, argv);
+   }
+
    return status;
 }

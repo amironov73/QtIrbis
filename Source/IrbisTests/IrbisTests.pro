@@ -22,7 +22,9 @@ SOURCES +=  AllTests.cpp \
     CommonTest.cpp \
     NumberTextTest.cpp \
     RecordSerializerTest.cpp \
-    IlfFileTest.cpp
+    IlfFileTest.cpp \
+    IrbisTreeFileTest.cpp \
+    Iso2709Test.cpp
 
 HEADERS += IrbisTests.h
 

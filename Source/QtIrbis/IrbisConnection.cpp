@@ -328,7 +328,7 @@ void IrbisConnection::parseConnectionString(const QString &connectionString) {
         if (name == "host" || name == "server" || name == "address") {
             host = value;
         }
-        else if (name == port) {
+        else if (name == "port") {
             port = static_cast<quint16>(fastParse32(value));
         }
         else if (name == "user" || name == "username"
