@@ -49,7 +49,12 @@ SOURCES += QtIrbis.cpp \
     StopWords.cpp \
     NumberChunk.cpp \
     NumberText.cpp \
-    RecordSerializer.cpp
+    RecordSerializer.cpp \
+    ConnectionFactory.cpp \
+    IlfEntry.cpp \
+    IlfFile.cpp \
+    ChunkedBuffer.cpp \
+    MemoryChunk.cpp
 
 HEADERS += QtIrbis.h
 

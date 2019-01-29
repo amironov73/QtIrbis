@@ -16,13 +16,17 @@
 
 // Forward declaration
 
+class ChunkedBuffer;
 class ClientInfo;
 class ClientQuery;
 class CommandCode;
+class ConnectionFactory;
 class DatabaseInfo;
 class EmbeddedField;
 class FileSpecification;
 class FoundLine;
+class IlfEntry;
+class IlfFile;
 class IniFile;
 class IniLine;
 class IniSection;
@@ -38,6 +42,7 @@ class IrbisTreeNode;
 class IrbisVersion;
 class Iso2709;
 class MarcRecord;
+class MemoryChunk;
 class MenuEntry;
 class MenuFile;
 class NumberChunk;
@@ -59,6 +64,35 @@ class TermParameters;
 class TermPosting;
 class TextNavigator;
 class UserInfo;
+
+//=========================================================
+
+class QTIRBIS_EXPORT ChunkedBuffer
+{
+private:
+    MemoryChunk *_first, *_current, *_last;
+    qint32 _chunkSize, _position, _read;
+
+    bool _advance();
+    void _appendChunk();
+
+public:
+    const static qint32 DefaultChunkSize;
+
+    ChunkedBuffer(qint32 chunkSize = DefaultChunkSize);
+    ChunkedBuffer(const ChunkedBuffer &other) = delete;
+    ChunkedBuffer operator= (const ChunkedBuffer &other) = delete;
+    ~ChunkedBuffer();
+    bool eof() const;
+    qint32 peek();
+    qint32 read(char *buffer, qint32 offset, qint32 count);
+    qint32 readByte();
+    QString readLine(QTextCodec *codec);
+    void rewind();
+    void write(const char *buffer, qint32 offset, qint32 count);
+    void write(const QString &text, QTextCodec *codec);
+    void writeByte(quint8 value);
+};
 
 //=========================================================
 
@@ -159,6 +193,19 @@ public:
 
 //=========================================================
 
+class QTIRBIS_EXPORT ConnectionFactory
+{
+public:
+    ConnectionFactory();
+    ConnectionFactory(const ConnectionFactory &other) = delete;
+    ConnectionFactory& operator=(const ConnectionFactory&) = delete;
+    virtual ~ConnectionFactory();
+
+    virtual IrbisConnection* GetConnection();
+};
+
+//=========================================================
+
 class QTIRBIS_EXPORT DatabaseInfo
 {
 public:
@@ -223,6 +270,39 @@ public:
     void *icon;
     bool selected;
     bool materialized;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IlfEntry {
+public:
+    QDateTime date;
+    QString name;
+    QString description;
+    QString data;
+    qint32 position;
+    qint32 number;
+    qint32 dataLength;
+    qint16 flags;
+    bool deleted;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT IlfFile {
+public:
+    const static QString MagicString;
+
+    QList<IlfEntry> entries;
+    qint32 unknown1;
+    qint32 slotCount;
+    qint32 entryCount;
+    qint32 writeCount;
+    qint32 deleteCount;
+
+    IlfFile();
+
+    void ReadLocalFile(const QString &fileName);
 };
 
 //=========================================================
@@ -322,6 +402,9 @@ public:
     bool isConnected;
 
     IrbisConnection();
+    IrbisConnection(const IrbisConnection &other) = delete;
+    IrbisConnection& operator= (const IrbisConnection &other) = delete;
+    ~IrbisConnection();
 
     void actualizeRecord(const QString &database, int mfn);
     void connect();
@@ -585,6 +668,20 @@ public:
 
     friend QTIRBIS_EXPORT std::ostream&  operator << (std::ostream &stream, const MarcRecord &record);
     friend QTIRBIS_EXPORT std::wostream& operator << (std::wostream &stream, const MarcRecord &record);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT MemoryChunk
+{
+public:
+    quint8 *data;
+    MemoryChunk *next;
+
+    MemoryChunk(qint32 size);
+    MemoryChunk(const MemoryChunk &other) = delete;
+    MemoryChunk& operator= (const MemoryChunk &other) = delete;
+    ~MemoryChunk();
 };
 
 //=========================================================
@@ -1023,6 +1120,8 @@ QStringList QTIRBIS_EXPORT split(const QString &text, const QChar *separators);
 qint32 QTIRBIS_EXPORT sign(qint64 val);
 
 QString QTIRBIS_EXPORT toDebug(const QByteArray &array);
+
+QString QTIRBIS_EXPORT readString(QDataStream &stream, qint32 required, QTextCodec *codec);
 
 }
 

@@ -220,5 +220,18 @@ private slots:
     void roundtrip_1();
 };
 
+class IlfFileTest : public CommonTest
+{
+    Q_OBJECT
+
+public:
+    IlfFileTest();
+    ~IlfFileTest();
+
+private slots:
+
+    void readLocalFile_1();
+};
+
 #endif
 

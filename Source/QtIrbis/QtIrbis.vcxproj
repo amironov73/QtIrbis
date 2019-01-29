@@ -121,13 +121,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ChunkedBuffer.cpp" />
     <ClCompile Include="ClientInfo.cpp" />
     <ClCompile Include="ClientQuery.cpp" />
     <ClCompile Include="CommandCode.cpp" />
+    <ClCompile Include="ConnectionFactory.cpp" />
     <ClCompile Include="DatabaseInfo.cpp" />
     <ClCompile Include="EmbeddedField.cpp" />
     <ClCompile Include="FileSpecification.cpp" />
     <ClCompile Include="FoundLine.cpp" />
+    <ClCompile Include="IlfEntry.cpp" />
+    <ClCompile Include="IlfFile.cpp" />
     <ClCompile Include="IniFile.cpp" />
     <ClCompile Include="IrbisConnection.cpp" />
     <ClCompile Include="IrbisDate.cpp" />

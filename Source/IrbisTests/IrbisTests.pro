@@ -21,7 +21,8 @@ SOURCES +=  AllTests.cpp \
     StopWordsTest.cpp \
     CommonTest.cpp \
     NumberTextTest.cpp \
-    RecordSerializerTest.cpp
+    RecordSerializerTest.cpp \
+    IlfFileTest.cpp
 
 HEADERS += IrbisTests.h
 

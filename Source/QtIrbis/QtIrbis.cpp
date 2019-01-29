@@ -115,7 +115,7 @@ QStringList maxSplit(const QString &text, QChar separator, qint32 count) {
             result.append(text.mid(position));
             break;
         }
-        count++;
+        count--;
     }
 
     if (position < length) {
@@ -166,6 +166,21 @@ QString toDebug(const QByteArray &array) {
             result.append(QString("<%1>").arg(c.unicode(), 2, 16, QChar('0')));
         }
     }
+
+    return result;
+}
+
+QString QTIRBIS_EXPORT readString(QDataStream &stream, qint32 required, QTextCodec *codec) {
+    QByteArray array(required, 0);
+    qint32 readed = stream.readRawData(array.data(), required);
+    if (readed != required) {
+        throw IrbisException();
+    }
+    qint32 length = array.indexOf('\0');
+    if (length < 0) {
+        length = required;
+    }
+    QString result = codec->toUnicode(array.data(), length);
 
     return result;
 }

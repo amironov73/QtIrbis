@@ -22,6 +22,10 @@ IrbisConnection::IrbisConnection() :host("localhost"),
     port(6666), workstation('C'), isConnected(false) {
 }
 
+IrbisConnection::~IrbisConnection() {
+    disconnect();
+}
+
 void IrbisConnection::actualizeRecord(const QString &database, int mfn) {
     ClientQuery query (this, CommandCode::ActualizeRecord);
     query.addAnsi(database)
