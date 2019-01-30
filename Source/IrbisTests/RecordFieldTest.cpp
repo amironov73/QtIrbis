@@ -69,7 +69,8 @@ void RecordFieldTest::getSubField_1() {
 void RecordFieldTest::stream_1() {
     RecordField field(100);
     field.add('a', "SubfieldA").add('b', "SubfieldB");
-    std::ostringstream stream;
+    QString text;
+    QTextStream stream(&text);
     stream << field;
-    QVERIFY(stream.str() == "100#^aSubfieldA^bSubfieldB");
+    QVERIFY(text == "100#^aSubfieldA^bSubfieldB");
 }

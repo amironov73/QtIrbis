@@ -136,8 +136,9 @@ void MarcRecordTest::stream_1() {
     RecordField field200(200);
     field200.add('c', "SubC").add('d', "SubD");
     record.fields.append(field200);
-    std::ostringstream stream;
+    QString text;
+    QTextStream stream(&text);
     stream << record;
-    QVERIFY(stream.str() == "123#32\n0#321\n100#^aSubA^bSubB\n200#^cSubC^dSubD\n");
+    QVERIFY(text == "123#32\n0#321\n100#^aSubA^bSubB\n200#^cSubC^dSubD\n");
 }
 

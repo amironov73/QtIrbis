@@ -56,7 +56,12 @@ SOURCES += QtIrbis.cpp \
     ChunkedBuffer.cpp \
     MemoryChunk.cpp \
     XrfRecord64.cpp \
-    XrfFile64.cpp
+    XrfFile64.cpp \
+    MstRecord64.cpp \
+    MstRecordLeader64.cpp \
+    MstDictionaryEntry64.cpp \
+    MstFile64.cpp \
+    MstControlRecord64.cpp
 
 HEADERS += QtIrbis.h
 

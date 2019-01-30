@@ -114,17 +114,8 @@ bool RecordField::verify(bool throwOnError) const {
     return result;
 }
 
-std::ostream& operator << (std::ostream &stream, const RecordField &field) {
-    stream << field.tag << '#' << field.value.toStdString();
-    for (const auto &subField : field.subfields) {
-        stream << subField;
-    }
-
-    return stream;
-}
-
-std::wostream& operator << (std::wostream &stream, const RecordField &field) {
-    stream << field.tag << L'#' << field.value.toStdWString();
+QTextStream& operator << (QTextStream &stream, const RecordField &field) {
+    stream << field.tag << '#' << field.value;
     for (const auto &subField : field.subfields) {
         stream << subField;
     }

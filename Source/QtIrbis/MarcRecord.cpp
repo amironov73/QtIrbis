@@ -152,21 +152,11 @@ bool MarcRecord::verify(bool throwOnError) const {
     return result;
 }
 
-std::ostream&  operator << (std::ostream &stream, const MarcRecord &record) {
-    stream << record.mfn << '#' << record.status << std::endl;
-    stream << "0#" << record.version << std::endl;
+QTextStream&  operator << (QTextStream &stream, const MarcRecord &record) {
+    stream << record.mfn << '#' << record.status << endl;
+    stream << "0#" << record.version << endl;
     for (const RecordField &field : record.fields) {
-        stream << field << std::endl;
-    }
-
-    return stream;
-}
-
-std::wostream& operator << (std::wostream &stream, const MarcRecord &record) {
-    stream << record.mfn << L'#' << record.status << std::endl;
-    stream << L"0#" << record.version << std::endl;
-    for (const RecordField &field : record.fields) {
-        stream << field << std::endl;
+        stream << field << endl;
     }
 
     return stream;

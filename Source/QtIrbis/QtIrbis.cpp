@@ -191,7 +191,13 @@ qint64 QTIRBIS_EXPORT read64bit(QDataStream &stream) {
     qint64 result = static_cast<qint64>((static_cast<quint64>(high) << 32) | low);
 
     return result;
+}
 
+void QTIRBIS_EXPORT write64bit(QDataStream &stream, qint64 value) {
+    quint32 low, high;
+    low = static_cast<quint32>(value & 0xFFFFFFFF);
+    high = static_cast<quint32>((value >> 32) & 0xFFFFFFFF);
+    stream << low << high;
 }
 
 }

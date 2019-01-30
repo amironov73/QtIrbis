@@ -16,11 +16,11 @@ IrbisTreeNode& IrbisTreeNode::add(const QString name) {
     return children.last();
 }
 
-void IrbisTreeNode::write(std::ostream &stream, qint32 level) {
+void IrbisTreeNode::write(QTextStream &stream, qint32 level) {
     for (qint32 i = 0; i < level; i++) {
         stream << IrbisTreeFile::Indent.toLatin1();
     }
-    stream << value.toStdString();
+    stream << value;
     for (auto child : children) {
         child.write(stream, level + 1);
     }

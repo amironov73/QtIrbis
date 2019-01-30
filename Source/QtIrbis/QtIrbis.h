@@ -45,6 +45,11 @@ class MarcRecord;
 class MemoryChunk;
 class MenuEntry;
 class MenuFile;
+class MstControlRecord64;
+class MstDictionaryEntry64;
+class MstFile64;
+class MstRecordLeader64;
+class MstRecord64;
 class NumberChunk;
 class NumberText;
 class PostingParameters;
@@ -226,6 +231,15 @@ public:
     static DatabaseInfo parse(ServerResponse &response);
     static QList<DatabaseInfo> parse(MenuFile &menu);
     QString toString() const;
+};
+
+//=========================================================
+
+enum DirectAccessMode
+{
+    Exclusive = 0,
+    Shared    = 1,
+    ReadOnly  = 2
 };
 
 //=========================================================
@@ -593,7 +607,7 @@ public:
 
     void parse(QTextStream &stream);
     void readLocalFile(const QString &fileName, QTextCodec *encoding);
-    void write(std::ostream &stream) const;
+    void write(QTextStream &stream) const;
 };
 
 //=========================================================
@@ -608,7 +622,7 @@ public:
     IrbisTreeNode(const QString &value="");
 
     IrbisTreeNode& add(const QString name);
-    void write(std::ostream &stream, qint32 level);
+    void write(QTextStream &stream, qint32 level);
 };
 
 //=========================================================
@@ -670,8 +684,7 @@ public:
     QString toString() const;
     bool verify(bool throwOnError) const;
 
-    friend QTIRBIS_EXPORT std::ostream&  operator << (std::ostream &stream, const MarcRecord &record);
-    friend QTIRBIS_EXPORT std::wostream& operator << (std::wostream &stream, const MarcRecord &record);
+    friend QTIRBIS_EXPORT QTextStream&  operator << (QTextStream &stream, const MarcRecord &record);
 };
 
 //=========================================================
@@ -721,6 +734,96 @@ public:
     const QString& getValueSensitive(const QString &code, const QString &defaultValue) const;
     static MenuFile parse(QTextStream &stream);
     static MenuFile parseLocalFile(const QString &filename, const QTextCodec *encoding);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT MstControlRecord64
+{
+public:
+    const static qint32 RecordSize;
+    const static qint64 LockFlagPosition;
+
+    qint32 ctlMfn;
+    qint32 nextMfn;
+    qint64 nextPosition;
+    qint32 mftType;
+    qint32 recCnt;
+    qint32 reserv1;
+    qint32 reserv2;
+    qint32 blocked;
+
+    friend QDataStream& operator >> (QDataStream &stream, MstControlRecord64 &record);
+    friend QDataStream& operator << (QDataStream &stream, const MstControlRecord64 &record);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT MstDictionaryEntry64
+{
+public:
+    const static qint32 EntrySize;
+
+    qint32 tag;
+    qint32 position;
+    qint32 length;
+    QString text;
+
+    friend QDataStream& operator >> (QDataStream &stream, MstDictionaryEntry64 &entry);
+    friend QDataStream& operator << (QDataStream &stream, const MstDictionaryEntry64 &entry);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT MstFile64
+{
+private:
+    QFile _file;
+    QDataStream _stream;
+    QMutex _mutex;
+
+public:
+    MstControlRecord64 control;
+    QString fileName;
+
+    MstFile64(const QString &fileName);
+    MstFile64(const MstFile64 &other) = delete;
+    MstFile64& operator= (const MstFile64 &other) = delete;
+
+    bool open();
+    MstRecord64 readRecord(qint64 position);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT MstRecordLeader64
+{
+public:
+    const static qint32 LeaderSize;
+
+    qint32 mfn;
+    qint32 length;
+    qint64 previous;
+    qint32 base;
+    qint32 nvf;
+    qint32 status;
+    qint32 version;
+
+    friend QDataStream& operator >> (QDataStream& stream, MstRecordLeader64 &leader);
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT MstRecord64
+{
+public:
+    MstRecordLeader64 leader;
+    qint64 offset;
+    QList<MstDictionaryEntry64> dictionary;
+
+    MstRecord64();
+
+    bool isDeleted() const;
 };
 
 //=========================================================
@@ -832,8 +935,7 @@ public:
     QString toString() const;
     bool verify(bool throwOnError) const;
 
-    friend QTIRBIS_EXPORT std::ostream&  operator << (std::ostream &stream, const RecordField &field);
-    friend QTIRBIS_EXPORT std::wostream& operator << (std::wostream &stream, const RecordField &field);
+    friend QTIRBIS_EXPORT QTextStream&  operator << (QTextStream &stream, const RecordField &field);
 };
 
 //=========================================================
@@ -990,8 +1092,7 @@ public:
     QString toString() const;
     bool verify(bool throwOnError) const;
 
-    friend QTIRBIS_EXPORT std::ostream& operator << (std::ostream &stream, const SubField &subField);
-    friend QTIRBIS_EXPORT std::wostream& operator << (std::wostream &stream, const SubField &subField);
+    friend QTIRBIS_EXPORT QTextStream& operator << (QTextStream &stream, const SubField &subField);
 };
 
 //=========================================================
@@ -1166,6 +1267,7 @@ QString QTIRBIS_EXPORT toDebug(const QByteArray &array);
 QString QTIRBIS_EXPORT readString(QDataStream &stream, qint32 required, QTextCodec *codec);
 
 qint64 QTIRBIS_EXPORT read64bit(QDataStream &stream);
+void QTIRBIS_EXPORT write64bit(QDataStream &stream, qint64 value);
 
 }
 

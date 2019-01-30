@@ -116,7 +116,7 @@ void IrbisTreeFile::readLocalFile(const QString &fileName, QTextCodec *encoding)
     parse(stream);
 }
 
-void IrbisTreeFile::write(std::ostream &stream) const {
+void IrbisTreeFile::write(QTextStream &stream) const {
     for (auto item : roots) {
         item.write(stream, 0);
     }

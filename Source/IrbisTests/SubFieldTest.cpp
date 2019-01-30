@@ -40,8 +40,9 @@ void SubFieldTest::clone_1() {
 
 void SubFieldTest::stream_1() {
     SubField subField('a', "Value");
-    std::ostringstream stream;
+    QString text;
+    QTextStream stream(&text);
     stream << subField;
-    QVERIFY(stream.str() == "^aValue");
+    QVERIFY(text == "^aValue");
 }
 

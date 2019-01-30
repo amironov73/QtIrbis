@@ -276,5 +276,18 @@ private slots:
     void readRecord_1();
 };
 
+class MstFile64Test : public CommonTest
+{
+    Q_OBJECT
+
+public:
+    MstFile64Test();
+    ~MstFile64Test();
+
+private slots:
+
+    void readRecord_1();
+};
+
 #endif
 

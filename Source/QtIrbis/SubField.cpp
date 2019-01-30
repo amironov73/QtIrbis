@@ -28,14 +28,8 @@ bool SubField::verify(bool throwOnError) const {
     return result;
 }
 
-std::ostream& operator << (std::ostream &stream, const SubField &subField) {
-    stream << '^' << subField.code.toLatin1() << subField.value.toStdString();
-
-    return stream;
-}
-
-std::wostream& operator << (std::wostream &stream, const SubField &subField) {
-    stream << L'^' << subField.code.toLatin1() << subField.value.toStdWString();
+QTextStream& operator << (QTextStream &stream, const SubField &subField) {
+    stream << '^' << subField.code << subField.value;
 
     return stream;
 }

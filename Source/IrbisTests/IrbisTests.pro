@@ -25,7 +25,8 @@ SOURCES +=  AllTests.cpp \
     IlfFileTest.cpp \
     IrbisTreeFileTest.cpp \
     Iso2709Test.cpp \
-    XrfFile64Test.cpp
+    XrfFile64Test.cpp \
+    MstFile64Test.cpp
 
 HEADERS += IrbisTests.h
 
