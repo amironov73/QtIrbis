@@ -22,6 +22,7 @@ class ClientQuery;
 class CommandCode;
 class ConnectionFactory;
 class DatabaseInfo;
+class DirectAccess64;
 class EmbeddedField;
 class FileSpecification;
 class FoundLine;
@@ -437,7 +438,7 @@ public:
     QString formatRecord(const QString &format, MarcRecord &record);
     QStringList formatRecords(const QString &format, const QList<int> &mfns);
     DatabaseInfo getDatabaseInfo(const QString &databaseName);
-    int getMaxMfn(const QString &databaseName);
+    qint32 getMaxMfn(const QString &databaseName);
     ServerStat getServerStat();
     IrbisVersion getServerVersion();
     QList<UserInfo> getUserList();
@@ -467,8 +468,8 @@ public:
     void reloadDictionary(const QString &databaseName);
     void reloadMasterFile(const QString &databaseName);
     void restartServer();
-    QList<int> search(const QString &expression);
-    QList<int> search(const SearchParameters &parameters);
+    QList<qint32> search(const QString &expression);
+    QList<qint32> search(const SearchParameters &parameters);
     QString toConnectionString();
     void truncateDatabase(const QString &databaseName);
     void unlockDatabase(const QString &databaseName);
@@ -824,6 +825,7 @@ public:
     MstRecord64();
 
     bool isDeleted() const;
+    MarcRecord toMarcRecord() const;
 };
 
 //=========================================================
@@ -1015,7 +1017,7 @@ private:
     qint32 length;
     qint32 position;
     bool closed;
-    int savedSymbol;
+    qint32 savedSymbol;
 
     static char preamble[];
     static const qint32 preambleLength = 17;
@@ -1024,9 +1026,9 @@ private:
 
 public:
     QString command;
-    int clientId;
-    int queryId;
-    int returnCode;
+    qint32 clientId;
+    qint32 queryId;
+    qint32 returnCode;
 
     ServerResponse(QTcpSocket *socket);
     ServerResponse(const ServerResponse &other) = default;
@@ -1233,6 +1235,24 @@ public:
     bool isDeleted() const;
     bool isLocked() const;
     QString toString() const;
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT DirectAccess64
+{
+public:
+    MstFile64 mst;
+    XrfFile64 xrf;
+    QString database;
+
+    DirectAccess64(const QString &path);
+    DirectAccess64(const DirectAccess64 &other) = delete;
+    DirectAccess64& operator= (const DirectAccess64 &other) = delete;
+
+    bool open();
+    MstRecord64 readRawRecord(qint32 mfn);
+    MarcRecord readRecord(qint32 mfn);
 };
 
 //=========================================================

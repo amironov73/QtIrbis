@@ -57,5 +57,6 @@ copy %MINGW%\bin\libgcc*.dll         Binaries\xp > nul 2> nul
 copy %MINGW%\bin\libstdc*.dll        Binaries\xp > nul 2> nul
 copy %MINGW%\bin\libwinpthread*.dll  Binaries\xp > nul 2> nul
 copy Source\QtIrbis\release\*.*      Binaries\xp > nul 2> nul
+copy Source\QtIrbis\QtIrbis.h        Binaries\xp > nul 2> nul
 
 EndLocal

@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     QtIrbis \
-    IrbisTests
+    OfflineTests \
+    OnlineTests

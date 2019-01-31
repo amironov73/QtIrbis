@@ -11,6 +11,4 @@ build_script:
 artifacts:
   - path: Binaries
     name: Binaries
-  - path: Source\IrbisTests\release
-    name: Tests
 

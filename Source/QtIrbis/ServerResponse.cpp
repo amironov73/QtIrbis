@@ -15,6 +15,7 @@ char ServerResponse::preamble[] = {
 
 ServerResponse::ServerResponse(QTcpSocket *socket) {
     this->socket = socket;
+    socket->waitForReadyRead();
     data = socket->readAll();
     length = data.size();
     position = 0;

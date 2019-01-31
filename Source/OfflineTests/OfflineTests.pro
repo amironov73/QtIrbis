@@ -26,9 +26,11 @@ SOURCES +=  AllTests.cpp \
     IrbisTreeFileTest.cpp \
     Iso2709Test.cpp \
     XrfFile64Test.cpp \
-    MstFile64Test.cpp
+    MstFile64Test.cpp \
+    DirectAccess64Test.cpp \
+    FunctionTest.cpp
 
-HEADERS += IrbisTests.h
+HEADERS += OfflineTests.h
 
 PRECOMPILED_HEADER = pch.h
 

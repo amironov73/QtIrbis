@@ -12,3 +12,18 @@ MstRecord64::MstRecord64()
 bool MstRecord64::isDeleted() const {
     return (leader.status & RecordStatus::Deleted) != 0;
 }
+
+MarcRecord MstRecord64::toMarcRecord() const {
+    MarcRecord result;
+    result.status = 0; // TODO obtain the status
+    result.version = 0; // TODO obtain the version
+    result.fields.reserve(dictionary.size());
+    for (const MstDictionaryEntry64 &entry : dictionary) {
+        RecordField field(entry.tag);
+        // field.parse(entry.text); // TODO parse the field
+        result.fields.append(field);
+    }
+
+    return result;
+}
+

@@ -6,6 +6,11 @@ int main(int argc, char** argv)
    int status = 0;
 
    {
+       FunctionTest tmp;
+       status |= QTest::qExec(&tmp, argc, argv);
+   }
+
+   {
       SubFieldTest tmp;
       status |= QTest::qExec(&tmp, argc, argv);
    }
@@ -87,6 +92,11 @@ int main(int argc, char** argv)
 
    {
        MstFile64Test tmp;
+       status |= QTest::qExec(&tmp, argc, argv);
+   }
+
+   {
+       DirectAccess64Test tmp;
        status |= QTest::qExec(&tmp, argc, argv);
    }
 

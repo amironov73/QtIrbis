@@ -61,7 +61,8 @@ SOURCES += QtIrbis.cpp \
     MstRecordLeader64.cpp \
     MstDictionaryEntry64.cpp \
     MstFile64.cpp \
-    MstControlRecord64.cpp
+    MstControlRecord64.cpp \
+    DirectAccess64.cpp
 
 HEADERS += QtIrbis.h
 

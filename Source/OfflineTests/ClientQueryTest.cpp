@@ -12,6 +12,6 @@ void ClientQueryTest::encode_1() {
     query.addAnsi("Hello, world");
     query.addUtf("Привет, мир!");
     QByteArray array = query.encode();
-    QVERIFY(array.size() == 51);
+    QVERIFY(array.size() == 53);
 }
 

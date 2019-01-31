@@ -127,6 +127,7 @@
     <ClCompile Include="CommandCode.cpp" />
     <ClCompile Include="ConnectionFactory.cpp" />
     <ClCompile Include="DatabaseInfo.cpp" />
+    <ClCompile Include="DirectAccess64.cpp" />
     <ClCompile Include="EmbeddedField.cpp" />
     <ClCompile Include="FileSpecification.cpp" />
     <ClCompile Include="FoundLine.cpp" />

@@ -61,17 +61,21 @@ QString fastToString(qint32 value) {
     memset(buffer, 0, sizeof(buffer));
     qint32 offset = 9;
     if (value == 0) {
-        buffer[offset--] = '0';
+        buffer[offset] = '0';
     }
     else {
-        for (; value != 0; offset--) {
+        while (true) {
             qint32 remainder = value % 10;
-            value = value / 10;
             buffer[offset] = static_cast<char>('0' + remainder);
+            value = value / 10;
+            if (!value) {
+                break;
+            }
+            --offset;
         }
     }
 
-    return QString(buffer + 9 - offset);
+    return QString(buffer + offset);
 }
 
 const QString& iif(const QString &s1, const QString &s2) {

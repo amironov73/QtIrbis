@@ -99,6 +99,7 @@ ServerResponse IrbisConnection::execute(ClientQuery &query) {
     socket->connectToHost(host, port);
     socket->waitForConnected();
     socket->write(query.encode());
+    socket->waitForBytesWritten();
     ServerResponse result = ServerResponse(socket);
 
     return result;
@@ -180,7 +181,7 @@ DatabaseInfo IrbisConnection::getDatabaseInfo(const QString &databaseName) {
     return result;
 }
 
-int IrbisConnection::getMaxMfn(const QString &databaseName) {
+qint32 IrbisConnection::getMaxMfn(const QString &databaseName) {
     ClientQuery query (this, CommandCode::GetMaxMfn);
     query.addAnsiNoLf(databaseName);
 
@@ -536,7 +537,7 @@ void IrbisConnection::restartServer() {
     executeAnsi(CommandCode::RestartServer);
 }
 
-QList<int> IrbisConnection::search(const QString &expression) {
+QList<qint32> IrbisConnection::search(const QString &expression) {
     SearchParameters parameters;
     parameters.database = database;
     parameters.searchExpression = expression;
@@ -546,7 +547,7 @@ QList<int> IrbisConnection::search(const QString &expression) {
     return search(parameters);
 }
 
-QList<int> IrbisConnection::search(const SearchParameters &parameters) {
+QList<qint32> IrbisConnection::search(const SearchParameters &parameters) {
     const QString &databaseName = iif(parameters.database, database);
     ClientQuery query (this, CommandCode::Search);
     query.addAnsi(databaseName)
@@ -560,10 +561,10 @@ QList<int> IrbisConnection::search(const SearchParameters &parameters) {
 
     ServerResponse response = execute(query);
     response.checkReturnCode();
-    int expected = response.readInt32();
-    int batchSize = qMin(expected, 32000); // MAXPACKET
-    QList<int> result;
-    for (int i = 0; i < batchSize; i++) {
+    qint32 expected = response.readInt32();
+    qint32 batchSize = qMin(expected, 32000); // MAXPACKET
+    QList<qint32> result;
+    for (qint32 i = 0; i < batchSize; i++) {
         QString line = response.readAnsi();
         QStringList parts = line.split("#"); // 2
         qint32 mfn = fastParse32(parts[0]);

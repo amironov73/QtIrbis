@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(IrbisTests)
+project(OfflineTests)
  
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_PREFIX_PATH "C:/Qt/5.11.2/msvc2017_64")
@@ -20,5 +20,5 @@ FILE(GLOB CppFiles *.cpp)
 
 set(SOURCES ${CppFiles} ${HFiles}) 
  
-add_executable(IrbisTests ${SOURCES} ${HEADERS} ${UI})
+add_executable(OfflineTests ${SOURCES} ${HEADERS} ${UI})
 target_link_libraries(QtTests Qt5::Core Qt5::Network Qt5::Test QtIrbis)

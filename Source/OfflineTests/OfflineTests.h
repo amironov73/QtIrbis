@@ -1,5 +1,5 @@
-#ifndef IRBISTESTS_H
-#define IRBISTESTS_H
+#ifndef OFFLINETESTS_H
+#define OFFLINETESTS_H
 
 #include <QtCore>
 #include <QtTest>
@@ -14,6 +14,19 @@ public:
     QDir irbis64datai();
     QDir irbis64ibis();
     QDir irbis64deposit();
+};
+
+class FunctionTest : public QObject
+{
+    Q_OBJECT
+
+public:
+    FunctionTest();
+    ~FunctionTest();
+
+private slots:
+
+    void fastToString_1();
 };
 
 class SubFieldTest : public QObject
@@ -286,6 +299,23 @@ public:
 
 private slots:
 
+    void readRecord_1();
+};
+
+class DirectAccess64Test : public CommonTest
+{
+    Q_OBJECT
+
+public:
+    DirectAccess64Test();
+    ~DirectAccess64Test();
+
+private slots:
+
+    void constructor_1();
+    void constructor_2();
+    void constructor_3();
+    void readRawRecord_1();
     void readRecord_1();
 };
 
