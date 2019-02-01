@@ -4,7 +4,7 @@ ManagedClient ported to Qt 5. Currently supported:
 
 * C++14;
 * 32- and 64-bit Windows including Windows XP;
-* Xenial Ubuntu release;
+* Xenial Ubuntu release (GCC 5.4);
 * MSVS 2017 Community Edition, MinGW 4.9.2 for Windows XP;
 * Qt 5.11 for newer Windows, Qt 5.6 for Windows XP.
 

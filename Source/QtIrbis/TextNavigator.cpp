@@ -152,3 +152,189 @@ QString TextNavigator::remainingText() const {
     return _text.mid(_position);
 }
 
+QChar TextNavigator::lookAhead(qint32 distance) const {
+    qint32 newPosition = _position + distance;
+
+    return charAt(newPosition);
+}
+
+QChar TextNavigator::lookBehind(qint32 distance) const {
+    qint32 newPosition = _position - distance;
+
+    return charAt(newPosition);
+}
+
+TextNavigator& TextNavigator::move(qint32 distance) {
+    // TODO Some checks
+
+    _position += distance;
+    _column += distance;
+
+    return *this;
+}
+
+QString TextNavigator::peekString(qint32 length) {
+    QString result;
+
+    if (eot()) {
+        return result;
+    }
+
+    qint32 savePosition = _position, saveColumn = _column, saveLine = _line;
+    for (qint32 i = 0; i < length; ++i) {
+        QChar c = readChar();
+        if ((c == EOF) || (c == '\r') || (c == '\n')) {
+            break;
+        }
+
+        result.append(c);
+    }
+
+    _position = savePosition;
+    _column = saveColumn;
+    _line = saveLine;
+
+    return result;
+}
+
+QString TextNavigator::peekTo(QChar stopChar) {
+    QString result;
+
+    if (eot()) {
+        return result;
+    }
+
+    qint32 savePosition = _position, saveColumn = _column, saveLine = _line;
+    result = readTo(stopChar);
+    _position = savePosition;
+    _column = saveColumn;
+    _line = saveLine;
+
+    return result;
+}
+
+QString TextNavigator::peekUntil(QChar stopChar) {
+    QString result;
+
+    if (eot()) {
+        return result;
+    }
+
+    qint32 savePosition = _position, saveColumn = _column, saveLine = _line;
+    result = readUntil(stopChar);
+    _position = savePosition;
+    _column = saveColumn;
+    _line = saveLine;
+
+    return result;
+}
+
+QString TextNavigator::readInteger() {
+    QString result;
+
+    if (isDigit()) {
+        while (isDigit()) {
+            result.append(readChar());
+        }
+    }
+
+    return result;
+}
+
+QString TextNavigator::readString(qint32 length) {
+    QString result;
+
+    if (eot()) {
+        return result;
+    }
+
+    result.reserve(length);
+    for (qint32 i = 0; i < length; ++i) {
+        QChar c = readChar();
+        if (c == EOT) {
+            break;
+        }
+
+        result.append(c);
+    }
+
+    return result;
+}
+
+QString TextNavigator::readWhile(QChar goodChar) {
+    QString result;
+
+    while (true) {
+        QChar c = peekChar();
+        if ((c == EOT) || (c != goodChar)) {
+            break;
+        }
+
+        result.append(readChar());
+    }
+
+    return result;
+}
+
+QString TextNavigator::readWord() {
+    QString result;
+
+    while (true) {
+        QChar c = peekChar();
+        if ((c == EOT) || !c.isLetterOrNumber()) {
+            break;
+        }
+
+        result.append(readChar());
+    }
+
+    return result;
+}
+
+QString TextNavigator::recentText(qint32 length) const {
+    qint32 start = _position - length;
+    if (start < 0) {
+        length += start;
+        start = 0;
+    }
+
+    if (start >= _length) {
+        start = 0;
+        length = 0;
+    }
+
+    if (length < 0) {
+        length = 0;
+    }
+
+    return _text.mid(start, length);
+}
+
+TextNavigator& TextNavigator::skipWhitespace() {
+    while (true) {
+        QChar c = peekChar();
+        if (!c.isSpace()) {
+            break;
+        }
+        readChar();
+    }
+
+    return *this;
+}
+
+TextNavigator& TextNavigator::skipPunctuation() {
+    while (true) {
+        QChar c = peekChar();
+        if (!c.isPunct()) {
+            break;
+        }
+        readChar();
+    }
+
+    return *this;
+}
+
+QString TextNavigator::mid(qint32 offset, qint32 length) const {
+    return _text.mid(offset, length);
+}
+

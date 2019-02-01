@@ -28,7 +28,8 @@ SOURCES +=  AllTests.cpp \
     XrfFile64Test.cpp \
     MstFile64Test.cpp \
     DirectAccess64Test.cpp \
-    FunctionTest.cpp
+    FunctionTest.cpp \
+    AlphabetTableTest.cpp
 
 HEADERS += OfflineTests.h
 

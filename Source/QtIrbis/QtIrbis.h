@@ -16,6 +16,7 @@
 
 // Forward declaration
 
+class AlphabetTable;
 class ChunkedBuffer;
 class ClientInfo;
 class ClientQuery;
@@ -72,6 +73,25 @@ class TextNavigator;
 class UserInfo;
 class XrfFile64;
 class XrfRecord64;
+
+//=========================================================
+
+class QTIRBIS_EXPORT AlphabetTable
+{
+public:
+    const static QString FileName;
+    QSet<QChar> characters;
+
+    AlphabetTable(const QByteArray &bytes, QTextCodec *encoding);
+
+    static const AlphabetTable& instance();
+    bool isAlpha(const QChar &c) const;
+    static AlphabetTable parse(QTextStream &stream);
+    static AlphabetTable readLocalFile(const QString &fileName);
+    QString trimText(const QString &text) const;
+    QStringList splitWords(const QString &text) const;
+    bool verify(bool throwOnError) const;
+};
 
 //=========================================================
 
@@ -1162,21 +1182,35 @@ public:
 
     qint32 column() { return _column; }
     qint32 line() { return _line; }
-    qint32 length() { return _length; }
+    qint32 length() { return _length; }    
     qint32 position() { return _position; }
     bool eot() const { return _position >= _length; }
 
     QChar charAt(qint32 position) const;
+    QChar lookAhead(qint32 distance = 1) const;
+    QChar lookBehind(qint32 distance = 1) const;
+    TextNavigator& move(qint32 distance);
     QChar peekChar() const;
     QChar readChar();
+    QString peekString(qint32 length);
+    QString peekTo(QChar stopChar);
+    QString peekUntil(QChar stopChar);
     QString readLine();
     bool isControl() const;
     bool isDigit() const;
     bool isLetter() const;
     bool isWhitespace() const;
+    QString readInteger();
+    QString readString(qint32 length);
     QString readTo(QChar stopChar);
     QString readUntil(QChar stopChar);
+    QString readWhile(QChar goodChar);
+    QString readWord();
+    QString recentText(qint32 length) const;
     QString remainingText() const;
+    TextNavigator& skipWhitespace();
+    TextNavigator& skipPunctuation();
+    QString mid(qint32 offset, qint32 length) const;
 };
 
 //=========================================================

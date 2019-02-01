@@ -319,5 +319,21 @@ private slots:
     void readRecord_1();
 };
 
+class AlphabetTableTest : public CommonTest
+{
+    Q_OBJECT
+
+public:
+    AlphabetTableTest();
+    ~AlphabetTableTest();
+
+private slots:
+
+    void instance_1();
+    void parse_1();
+    void readLocalFile_1();
+    void trimText_1();
+};
+
 #endif
 

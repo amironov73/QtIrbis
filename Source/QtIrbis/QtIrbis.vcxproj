@@ -121,6 +121,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AlphabetTable.cpp" />
     <ClCompile Include="ChunkedBuffer.cpp" />
     <ClCompile Include="ClientInfo.cpp" />
     <ClCompile Include="ClientQuery.cpp" />
