@@ -14,7 +14,7 @@ script:
  - cd Source
  - qmake All.pro
  - make
- - cp QtIrbis/lib* IrbisTests/
+ - cp QtIrbis/lib* OfflineTests/
  - cd OfflineTests
  - ldd OfflineTests
  - ./OfflineTests

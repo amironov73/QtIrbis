@@ -20,7 +20,7 @@ RecordField::RecordField(const RecordField &other)
 }
 
 bool RecordField::isEmpty() const {
-    return tag == 0 || (value.isEmpty() && subfields.isEmpty());
+    return !tag || (value.isEmpty() && subfields.isEmpty());
 }
 
 RecordField& RecordField::add(QChar code, const QString &value) {

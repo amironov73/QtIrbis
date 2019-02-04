@@ -146,7 +146,7 @@ bool MarcRecord::verify(bool throwOnError) const {
     }
 
     if (!result && throwOnError) {
-        throw IrbisEncoding();
+        throw IrbisException();
     }
 
     return result;
