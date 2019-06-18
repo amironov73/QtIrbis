@@ -59,6 +59,7 @@ class ProtocolText;
 class RawRecord;
 class RecordField;
 class RecordSerializer;
+class Search;
 class SearchParameters;
 class SearchScenario;
 class ServerStat;
@@ -975,8 +976,7 @@ public:
 
 //=========================================================
 
-enum RecordStatus
-{
+enum RecordStatus {
     LogicallyDeleted = 1,
     PhysicallyDeleted = 2,
     Deleted = LogicallyDeleted | PhysicallyDeleted,
@@ -985,6 +985,55 @@ enum RecordStatus
     Last = 32,
     Locked = 64
 };
+
+//=========================================================
+
+class QTIRBIS_EXPORT Search {
+private:
+    QString _buffer;
+
+public:
+
+    static Search all();
+    Search& and_(const QString &text);
+    Search& and_(const QString &text1, const QString &text2);
+    Search& and_(const QString &text1, const QString &text2, const QString &text3);
+    Search& and_(const Search &item);
+    Search& and_(const Search &item1, const Search &item2);
+    Search& and_(const Search &item1, const Search &item2, const Search &item3);
+    static Search equals(const QString &prefix, const QString &text);
+    static Search equals(const QString &prefix, const QString &text1, const QString &text2);
+    static Search equals(const QString &prefix, const QString &text1, const QString &text2, const QString &text3);
+    static bool needWrap(const QString &text);
+    Search& not_(const QString &text);
+    Search& not_(const Search &item);
+    Search& or_(const QString &text);
+    Search& or_(const QString &text1, const QString &text2);
+    Search& or_(const QString &text1, const QString &text2, const QString &text3);
+    Search& or_(const Search &item);
+    Search& or_(const Search &item1, const Search &item2);
+    Search& or_(const Search &item1, const Search &item2, const Search &item3);
+    Search& sameField(const QString &text);
+    Search& sameRepeat(const QString &text);
+    QString toString() const;
+    static QString wrap(const QString &text);
+    static QString wrap(const Search &item);
+}; // class Search
+
+Search keyword(const QString &value1);
+Search author(const QString &value1);
+Search title(const QString &value1);
+Search publisher(const QString &value1);
+Search place(const QString &value1);
+Search subject(const QString &value1);
+Search language(const QString &value1);
+Search year(const QString &value1);
+Search magazine(const QString &value1);
+Search documentKind(const QString &value1);
+Search udc(const QString &value1);
+Search bbk(const QString &value1);
+Search rzn(const QString &value1);
+Search mhr(const QString &value1);
 
 //=========================================================
 
@@ -1182,7 +1231,7 @@ public:
 
     qint32 column() { return _column; }
     qint32 line() { return _line; }
-    qint32 length() { return _length; }    
+    qint32 length() { return _length; }
     qint32 position() { return _position; }
     bool eot() const { return _position >= _length; }
 

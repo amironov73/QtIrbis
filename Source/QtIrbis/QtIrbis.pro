@@ -10,6 +10,7 @@ TEMPLATE = lib
 DEFINES += QTIRBIS_LIBRARY
 
 SOURCES += QtIrbis.cpp \
+    Builder.cpp \
     SubField.cpp \
     RecordField.cpp \
     MarcRecord.cpp \

@@ -183,7 +183,7 @@ QString TextNavigator::peekString(qint32 length) {
     qint32 savePosition = _position, saveColumn = _column, saveLine = _line;
     for (qint32 i = 0; i < length; ++i) {
         QChar c = readChar();
-        if ((c == EOF) || (c == '\r') || (c == '\n')) {
+        if ((c == EOT) || (c == '\r') || (c == '\n')) {
             break;
         }
 
