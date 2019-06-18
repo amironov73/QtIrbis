@@ -6,7 +6,7 @@ ManagedClient ported to Qt 5. Currently supported:
 * 32- and 64-bit Windows including Windows XP;
 * Xenial Ubuntu release (GCC 5.4);
 * MSVS 2017 Community Edition, MinGW 4.9.2 for Windows XP;
-* Qt 5.11 for newer Windows, Qt 5.6 for Windows XP.
+* Qt 5.12 for newer Windows, Qt 5.6 for Windows XP.
 
 ### Links
 
@@ -17,6 +17,6 @@ ManagedClient ported to Qt 5. Currently supported:
 
 ### Build status
 
-[![Issues](https://img.shields.io/github/issues/amironov73/QtIrbis.svg)](https://github.com/amironov73/ManagedIrbis/issues)
+[![Issues](https://img.shields.io/github/issues/amironov73/QtIrbis.svg)](https://github.com/amironov73/QtIrbis/issues)
 [![Build status](https://img.shields.io/appveyor/ci/AlexeyMironov/qtirbis.svg)](https://ci.appveyor.com/project/AlexeyMironov/qtirbis/)
 [![Build status](https://api.travis-ci.org/amironov73/QtIrbis.svg)](https://travis-ci.org/amironov73/QtIrbis/)

@@ -6,8 +6,8 @@ rmdir /s /q Binaries\x86 > nul 2> nul
 mkdir Binaries\x64
 mkdir Binaries\x86
 
-call :BUILD C:\Qt\5.11.2\msvc2017_64 64 x64
-call :BUILD C:\Qt\5.11.2\msvc2015    32 x86
+call :BUILD C:\Qt\5.12.2\msvc2017_64 64 x64
+call :BUILD C:\Qt\5.12.2\msvc2017    32 x86
 
 goto :END
 
