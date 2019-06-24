@@ -54,3 +54,5 @@ CMakeLists.txt.user*
 *.vcxproj.user
 Binaries/x64
 Binaries/x86
+Binaries/xp
+

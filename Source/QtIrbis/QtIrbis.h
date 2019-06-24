@@ -460,6 +460,7 @@ public:
     QStringList formatRecords(const QString &format, const QList<int> &mfns);
     DatabaseInfo getDatabaseInfo(const QString &databaseName);
     qint32 getMaxMfn(const QString &databaseName);
+    QList<TermPosting> getRecordPostings(qint32 mfn, const QString &prefix);
     ServerStat getServerStat();
     IrbisVersion getServerVersion();
     QList<UserInfo> getUserList();

@@ -191,6 +191,17 @@ qint32 IrbisConnection::getMaxMfn(const QString &databaseName) {
     return response.returnCode;
 }
 
+QList<TermPosting> IrbisConnection::getRecordPostings(qint32 mfn, const QString &prefix) {
+    ClientQuery query(this, CommandCode::GetRecordPostings);
+    query.addAnsi(database);
+    query.add(mfn);
+    query.addUtf(prefix);
+
+    ServerResponse response = execute(query);
+    response.checkReturnCode();
+    return TermPosting::parse(response);
+}
+
 ServerStat IrbisConnection::getServerStat() {
     ClientQuery query(this, CommandCode::GetServerStat);
 
