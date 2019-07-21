@@ -10,6 +10,7 @@ static QString getExt(const QString &path, const QString &ext) {
     if (info.isDir()) {
         QDir dir(path);
         QString name = info.baseName();
+        name = name.toLower(); // TODO some more smarter
         info.setFile(dir, name);
     }
 

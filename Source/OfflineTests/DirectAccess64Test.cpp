@@ -27,7 +27,7 @@ void DirectAccess64Test::constructor_3() {
     QString fileName = ibis.path();
     DirectAccess64 access(fileName);
     QVERIFY(access.open());
-    QVERIFY(access.database == "IBIS");
+    QVERIFY(access.database == "ibis");
 }
 
 void DirectAccess64Test::readRawRecord_1() {

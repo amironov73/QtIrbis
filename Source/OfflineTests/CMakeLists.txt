@@ -8,8 +8,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
-include_directories(../Source)
-link_directories(../Source/cmake-build-debug)
+include_directories(../../Source/QtIrbis)
+link_directories(../../Source/QtIrbis/cmake-build-debug)
  
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Network REQUIRED)
@@ -21,4 +21,4 @@ FILE(GLOB CppFiles *.cpp)
 set(SOURCES ${CppFiles} ${HFiles}) 
  
 add_executable(OfflineTests ${SOURCES} ${HEADERS} ${UI})
-target_link_libraries(QtTests Qt5::Core Qt5::Network Qt5::Test QtIrbis)
+target_link_libraries(OfflineTests Qt5::Core Qt5::Network Qt5::Test QtIrbis)

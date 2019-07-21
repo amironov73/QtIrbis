@@ -52,6 +52,13 @@ const AlphabetTable& AlphabetTable::instance() {
 }
 
 bool AlphabetTable::isAlpha(const QChar &value) const {
+//    for(auto ptr = characters.begin(); ptr != characters.end(); ptr++) {
+//        if (*ptr == value) {
+//            return true;
+//        }
+//    }
+//    return false;
+
     return characters.contains(value);
 }
 
