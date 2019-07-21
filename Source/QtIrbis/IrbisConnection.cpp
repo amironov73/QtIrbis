@@ -548,6 +548,14 @@ void IrbisConnection::restartServer() {
     executeAnsi(CommandCode::RestartServer);
 }
 
+QString IrbisConnection::requireTextFile(const FileSpecification &specification) {
+    QString result = readTextFile(specification);
+    if (result.isEmpty()) {
+        throw new IrbisFileNotFoundException(specification.toString());
+    }
+    return result;
+}
+
 QList<qint32> IrbisConnection::search(const QString &expression) {
     SearchParameters parameters;
     parameters.database = database;

@@ -64,7 +64,10 @@ SOURCES += QtIrbis.cpp \
     MstFile64.cpp \
     MstControlRecord64.cpp \
     DirectAccess64.cpp \
-    AlphabetTable.cpp
+    AlphabetTable.cpp \
+    IrbisFileNotFoundException.cpp \
+    IrbisResource.cpp \
+    ResourceDictionary.cpp
 
 HEADERS += QtIrbis.h
 

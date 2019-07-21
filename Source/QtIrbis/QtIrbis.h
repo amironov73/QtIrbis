@@ -36,8 +36,10 @@ class IrbisConnection;
 class IrbisDate;
 class IrbisEncoding;
 class IrbisException;
+class IrbisFileNotFoundException;
 class IrbisFormat;
 class IrbisProcessInfo;
+class IrbisResource;
 class IrbisText;
 class IrbisTreeFile;
 class IrbisTreeNode;
@@ -59,6 +61,7 @@ class ProtocolText;
 class RawRecord;
 class RecordField;
 class RecordSerializer;
+class ResourceDictionary;
 class Search;
 class SearchParameters;
 class SearchScenario;
@@ -490,6 +493,7 @@ public:
     void reloadDictionary(const QString &databaseName);
     void reloadMasterFile(const QString &databaseName);
     void restartServer();
+    QString requireTextFile(const FileSpecification &specification);
     QList<qint32> search(const QString &expression);
     QList<qint32> search(const SearchParameters &parameters);
     QString toConnectionString();
@@ -553,6 +557,17 @@ public:
 
 //=========================================================
 
+class QTIRBIS_EXPORT IrbisFileNotFoundException
+        : public IrbisException
+{
+public:
+    QString fileName;
+
+    IrbisFileNotFoundException(const QString &fileName);
+};
+
+//=========================================================
+
 class QTIRBIS_EXPORT IrbisFormat
 {
 public:
@@ -593,6 +608,19 @@ public:
 
     static QList<IrbisProcessInfo> parse(ServerResponse &response);
 };
+
+//=========================================================
+
+class QTIRBIS_EXPORT IrbisResource
+{
+public:
+    QString name;
+    QString content;
+
+    IrbisResource(const QString &name, const QString &content);
+};
+
+QTextStream& operator << (QTextStream &stream, const IrbisResource &resource);
 
 //=========================================================
 
@@ -985,6 +1013,26 @@ enum RecordStatus {
     NonActualized = 8,
     Last = 32,
     Locked = 64
+};
+
+//=========================================================
+
+class QTIRBIS_EXPORT ResourceDictionary {
+private:
+    QMap<QString, IrbisResource> _dictionary;
+
+public:
+
+    ResourceDictionary();
+
+    ResourceDictionary& add(const QString &name, const QString content);
+    ResourceDictionary& clear();
+    qint32 count() const;
+    const QString* get(const QString &name) const;
+    bool have(const QString &name) const;
+    ResourceDictionary& put(const QString &name, const QString content);
+    ResourceDictionary& remove(const QString &name);
+    QList<IrbisResource> toList() const;
 };
 
 //=========================================================
